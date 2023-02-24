@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.threadpanelfx.GameController">
+   <children>
+      <SplitPane dividerPositions="0.7520325203252033" prefHeight="400.0" prefWidth="600.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <SplitPane dividerPositions="0.8768844221105527" orientation="VERTICAL" prefHeight="400.0" prefWidth="447.0">
+                    <items>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <Rectangle arcHeight="5.0" arcWidth="5.0" fill="YELLOW" height="346.0" stroke="BLACK" strokeType="INSIDE" width="54.0" />
+                              <Polygon fill="DODGERBLUE" layoutX="17.0" layoutY="190.0" points="-1.52587890625E-5, -1.0, 19.199996948242188, -24.0, -1.52587890625E-5, -47.00000762939453" stroke="BLACK" strokeType="INSIDE" />
+                              <Pane id="arrow" layoutX="54.0" layoutY="120.0" prefHeight="91.0" prefWidth="88.0" visible="false">
+                                 <children>
+                                    <Line endX="-64.6" endY="0" layoutX="115.0" layoutY="45.0" startX="-100.0" />
+                                    <Polygon layoutX="80.0" layoutY="24.0" points="-35.0, 27.5, -25.0, 20.75, -35.0, 14.0" stroke="BLACK" strokeType="INSIDE" />
+                                 </children></Pane>
+                              <Line endX="50.4000244140625" endY="284.4000244140625" layoutX="271.0" layoutY="62.0" startX="50.4000244140625" startY="-64.0" />
+                              <Line endX="155.4000244140625" endY="274.4000244140625" layoutX="243.0" layoutY="72.0" startX="155.4000244140625" startY="-72.0" />
+                              <Circle id="circle1" layoutX="321.0" layoutY="166.0" radius="22.0" stroke="BLACK" strokeType="INSIDE">
+                                 <fill>
+                                    <RadialGradient centerX="0.5" centerY="0.5" radius="0.3">
+                                       <stops>
+                                          <Stop>
+                                             <color>
+                                                <Color red="1.0" opacity="0.5" />
+                                             </color>
+                                          </Stop>
+                                          <Stop offset="0.007633587786259542">
+                                             <color>
+                                                <Color red="1.0" opacity="0.75" />
+                                             </color>
+                                          </Stop>
+                                          <Stop offset="1.0">
+                                             <color>
+                                                <Color red="1.0" green="1.0" blue="1.0" />
+                                             </color>
+                                          </Stop>
+                                       </stops>
+                                    </RadialGradient>
+                                 </fill>
+                              </Circle>
+                               <Circle id="circle2" layoutX="398.0" layoutY="166.0" radius="13.0" stroke="BLACK" strokeType="INSIDE">
+                                   <fill>
+                                       <RadialGradient centerX="0.5" centerY="0.5" radius="0.3">
+                                           <stops>
+                                               <Stop>
+                                                   <color>
+                                                       <Color red="1.0" opacity="0.5" />
+                                                   </color>
+                                               </Stop>
+                                               <Stop offset="0.007633587786259542">
+                                                   <color>
+                                                       <Color red="1.0" opacity="0.75" />
+                                                   </color>
+                                               </Stop>
+                                               <Stop offset="1.0">
+                                                   <color>
+                                                       <Color red="1.0" green="1.0" blue="1.0" />
+                                                   </color>
+                                               </Stop>
+                                           </stops>
+                                       </RadialGradient>
+                                   </fill>
+                               </Circle>
+                           </children></AnchorPane>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <Button layoutX="14.0" layoutY="11.0" mnemonicParsing="false" text="Начало игры" />
+                              <Button layoutX="114.0" layoutY="11.0" mnemonicParsing="false" text="Остановить игру" />
+                              <Button layoutX="234.0" layoutY="11.0" mnemonicParsing="false" text="Выстрел" />
+                           </children>
+                        </AnchorPane>
+                    </items>
+                  </SplitPane>
+               </children></AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="14.0" style="-fx-font-weight: bold;" text="Счет игрока:">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="14.0" layoutY="62.0" style="-fx-font-weight: bold;" text="Выстрелов:">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="14.0" layoutY="34.0" text="0" />
+                  <Label layoutX="14.0" layoutY="82.0" text="0" />
+               </children></AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
