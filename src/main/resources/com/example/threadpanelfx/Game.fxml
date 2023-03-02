@@ -18,14 +18,14 @@
                            <children>
                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="YELLOW" height="346.0" stroke="BLACK" strokeType="INSIDE" width="54.0" />
                               <Polygon fill="DODGERBLUE" layoutX="17.0" layoutY="190.0" points="-1.52587890625E-5, -1.0, 19.199996948242188, -24.0, -1.52587890625E-5, -47.00000762939453" stroke="BLACK" strokeType="INSIDE" />
-                              <Pane id="arrow" layoutX="54.0" layoutY="120.0" prefHeight="91.0" prefWidth="88.0" visible="false">
+                              <Pane fx:id="arrow" layoutX="54.0" layoutY="155.0" prefHeight="15.0" prefWidth="45.0">
                                  <children>
-                                    <Line endX="-64.6" endY="0" layoutX="115.0" layoutY="45.0" startX="-100.0" />
-                                    <Polygon layoutX="80.0" layoutY="24.0" points="-35.0, 27.5, -25.0, 20.75, -35.0, 14.0" stroke="BLACK" strokeType="INSIDE" />
+                                    <Line endX="-74.6" endY="0" layoutX="115.0" layoutY="8.5" startX="-110.0" />
+                                    <Polygon layoutX="80.0" layoutY="24.0" points="-45.0, -9, -35.0, -15.75, -45.0, -22.5" stroke="BLACK" strokeType="INSIDE" />
                                  </children></Pane>
                               <Line endX="50.4000244140625" endY="284.4000244140625" layoutX="271.0" layoutY="62.0" startX="50.4000244140625" startY="-64.0" />
                               <Line endX="155.4000244140625" endY="274.4000244140625" layoutX="243.0" layoutY="72.0" startX="155.4000244140625" startY="-72.0" />
-                              <Circle id="circle1" layoutX="321.0" layoutY="166.0" radius="22.0" stroke="BLACK" strokeType="INSIDE">
+                              <Circle fx:id="circle1" layoutX="321.0" layoutY="166.0" radius="22.0" stroke="BLACK" strokeType="INSIDE">
                                  <fill>
                                     <RadialGradient centerX="0.5" centerY="0.5" radius="0.3">
                                        <stops>
@@ -48,7 +48,7 @@
                                     </RadialGradient>
                                  </fill>
                               </Circle>
-                               <Circle id="circle2" layoutX="398.0" layoutY="166.0" radius="13.0" stroke="BLACK" strokeType="INSIDE">
+                               <Circle fx:id="circle2" layoutX="398.0" layoutY="166.0" radius="13.0" stroke="BLACK" strokeType="INSIDE">
                                    <fill>
                                        <RadialGradient centerX="0.5" centerY="0.5" radius="0.3">
                                            <stops>
@@ -74,9 +74,9 @@
                            </children></AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
-                              <Button layoutX="14.0" layoutY="11.0" mnemonicParsing="false" text="Начало игры" />
-                              <Button layoutX="114.0" layoutY="11.0" mnemonicParsing="false" text="Остановить игру" />
-                              <Button layoutX="234.0" layoutY="11.0" mnemonicParsing="false" text="Выстрел" />
+                              <Button fx:id="startButton" layoutX="14.0" layoutY="11.0" mnemonicParsing="false" onAction="#OnStartGame" text="Начало игры" />
+                              <Button fx:id="stopButton" disable="true" layoutX="114.0" layoutY="11.0" mnemonicParsing="false" onAction="#OnStopGame" text="Остановить игру" />
+                              <Button fx:id="shotButton" disable="true" layoutX="234.0" layoutY="11.0" mnemonicParsing="false" onAction="#OnShot" text="Выстрел" />
                            </children>
                         </AnchorPane>
                     </items>
@@ -94,8 +94,8 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="14.0" layoutY="34.0" text="0" />
-                  <Label layoutX="14.0" layoutY="82.0" text="0" />
+                  <Label fx:id="scoresLabel" layoutX="14.0" layoutY="34.0" text="0" />
+                  <Label fx:id="shotsLabel" layoutX="14.0" layoutY="82.0" text="0" />
                </children></AnchorPane>
         </items>
       </SplitPane>

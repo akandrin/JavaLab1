@@ -75,7 +75,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.threadpanelfx/com.example.threadpanelfx.HelloApplication</mainClass>
+                            <mainClass>com.example.threadpanelfx/com.example.threadpanelfx.GameFrame</mainClass>
                         </configuration>
                     </execution>
                 </executions>
