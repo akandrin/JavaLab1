@@ -5,6 +5,12 @@ module com.example.threadpanelfx {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
 
-    opens com.example.threadpanelfx to javafx.fxml;
-    exports com.example.threadpanelfx;
+    exports com.example.threadpanelfx.Model;
+    opens com.example.threadpanelfx.Model to javafx.fxml;
+    exports com.example.threadpanelfx.Model.GameEvent;
+    opens com.example.threadpanelfx.Model.GameEvent to javafx.fxml;
+    exports com.example.threadpanelfx.View;
+    opens com.example.threadpanelfx.View to javafx.fxml;
+    exports com.example.threadpanelfx.Controller;
+    opens com.example.threadpanelfx.Controller to javafx.fxml;
 }
