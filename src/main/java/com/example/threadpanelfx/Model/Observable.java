@@ -4,7 +4,7 @@ import javafx.application.Platform;
 
 import java.util.ArrayList;
 
-public class Observable {
+public class Observable implements IObservable {
     private ArrayList<IObserver> observers = new ArrayList<>();
 
     public void AddObserver(IObserver observer)

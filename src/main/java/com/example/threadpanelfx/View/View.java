@@ -4,7 +4,7 @@ import com.example.threadpanelfx.Model.GameEvent.*;
 import com.example.threadpanelfx.Model.GameModelPool;
 import com.example.threadpanelfx.Model.IGameModel;
 import com.example.threadpanelfx.Model.IObserver;
-import com.example.threadpanelfx.Model.Observable;
+import com.example.threadpanelfx.Model.IObservable;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Label;
@@ -24,8 +24,8 @@ public class View implements IObserver {
     public View()
     {
         IGameModel model = GameModelPool.Instance().GetModel(GameModelPool.ModelType.local);
-        assert model instanceof Observable;
-        ((Observable) model).AddObserver(this);
+        assert model instanceof IObservable;
+        ((IObservable) model).AddObserver(this);
     }
 
     private void HandleEvent(ArrowChanged event)
