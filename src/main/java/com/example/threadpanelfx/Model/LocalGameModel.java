@@ -1,9 +1,6 @@
 package com.example.threadpanelfx.Model;
 
-import com.example.threadpanelfx.Model.GameEvent.ArrowChanged;
-import com.example.threadpanelfx.Model.GameEvent.ScoresChanged;
-import com.example.threadpanelfx.Model.GameEvent.ShotsChanged;
-import com.example.threadpanelfx.Model.GameEvent.TargetChanged;
+import com.example.threadpanelfx.Model.GameEvent.*;
 import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
@@ -11,7 +8,7 @@ import java.util.Collections;
 
 public class LocalGameModel extends Observable implements IGameModel {
     private ArrayList<PlayerInfo> m_playerInfoList;
-    private ArrayList<Point2D> m_targetPositionList; // две мишени
+    private ArrayList<Point2D> m_targetPositionAbsList; // две мишени
 
     private PlayerInfo getPlayerInfo(String name)
     {
@@ -40,47 +37,59 @@ public class LocalGameModel extends Observable implements IGameModel {
     public LocalGameModel()
     {
         this.m_playerInfoList = new ArrayList<>();
-        this.m_targetPositionList = new ArrayList<>();
+        this.m_targetPositionAbsList = new ArrayList<>();
     }
 
     @Override
-    public Point2D GetArrowPosition(String playerName)
+    public double GetArrowOffset(String playerName)
     {
-        Point2D result = null;
+        double result = 0;
         PlayerInfo playerInfo = getPlayerInfo(playerName);
         if (playerInfo.arrowIsVisible)
         {
-            result = playerInfo.arrowPosition;
+            result = playerInfo.arrowOffset;
         }
         return result;
     }
 
     @Override
-    public void SetArrowPosition(String playerName, boolean arrowIsVisible, Point2D pos)
+    public void SetArrowOffset(String playerName, boolean arrowIsVisible, double offset)
     {
         PlayerInfo playerInfo = getPlayerInfo(playerName);
         playerInfo.arrowIsVisible = arrowIsVisible;
-        playerInfo.arrowPosition = pos;
-        Notify(new ArrowChanged(arrowIsVisible, pos));
+        playerInfo.arrowOffset = offset;
+        Notify(new ArrowChanged(arrowIsVisible, offset, playerName));
     }
 
     @Override
-    public Point2D GetTargetPosition(int targetNumber)
+    public Point2D GetArrowHeadStartPositionAbs(String playerName) {
+        PlayerInfo playerInfo = getPlayerInfo(playerName);
+        return playerInfo.arrowHeadAbs;
+    }
+
+    @Override
+    public void SetArrowHeadStartPositionAbs(String playerName, Point2D arrowPositionAbs) {
+        PlayerInfo playerInfo = getPlayerInfo(playerName);
+        playerInfo.arrowHeadAbs = arrowPositionAbs;
+    }
+
+    @Override
+    public Point2D GetTargetPositionAbs(int targetNumber)
     {
-        return m_targetPositionList.get(targetNumber);
+        return m_targetPositionAbsList.get(targetNumber);
     }
 
     @Override
-    public void SetTargetPosition(int targetNumber, Point2D targetPosition)
+    public void SetTargetPositionAbs(int targetNumber, Point2D targetPositionAbs)
     {
         // если в списке нет такого индекса - увеличиваем список
-        while (targetNumber >= m_targetPositionList.size())
+        while (targetNumber >= m_targetPositionAbsList.size())
         {
-            m_targetPositionList.add(null);
+            m_targetPositionAbsList.add(null);
         }
 
-        m_targetPositionList.set(targetNumber, targetPosition);
-        Notify(new TargetChanged(targetNumber, targetPosition));
+        m_targetPositionAbsList.set(targetNumber, targetPositionAbs);
+        Notify(new TargetChanged(targetNumber, targetPositionAbs));
     }
 
     @Override
@@ -96,6 +105,14 @@ public class LocalGameModel extends Observable implements IGameModel {
         PlayerInfo playerInfo = getPlayerInfo(playerName);
         playerInfo.scores = newScores;
         Notify(new ScoresChanged(playerName, newScores));
+    }
+
+    @Override
+    public void ResetPlayerInfo() {
+        for (PlayerInfo playerInfo : m_playerInfoList)
+        {
+            playerInfo.Reset();
+        }
     }
 
     @Override
@@ -116,5 +133,6 @@ public class LocalGameModel extends Observable implements IGameModel {
         PlayerInfo playerInfo = new PlayerInfo();
         playerInfo.name = playerName;
         m_playerInfoList.add(playerInfo);
+        Notify(new NewPlayerAdded(playerName));
     }
 }

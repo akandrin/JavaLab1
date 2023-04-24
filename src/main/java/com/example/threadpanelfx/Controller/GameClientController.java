@@ -1,31 +1,21 @@
 package com.example.threadpanelfx.Controller;
 
-import com.example.threadpanelfx.Controller.AnimationThread;
 import com.example.threadpanelfx.Model.GameEvent.ArrowChanged;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
-import com.example.threadpanelfx.Model.GameEvent.ScoresChanged;
-import com.example.threadpanelfx.Model.GameEvent.TargetChanged;
 import com.example.threadpanelfx.Model.GameModelPool;
-import com.example.threadpanelfx.Model.IObserver;
 import com.example.threadpanelfx.View.View;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
-import javafx.util.Duration;
 
-public class GameController extends View {
+public class GameClientController extends View {
     @FXML
     Button startButton, stopButton, shotButton;
 
-    private LocalController controller;
+    private ClientController controller;
 
     @FXML
     public void initialize() {
-        controller = new LocalController(GameModelPool.Instance().GetModel(GameModelPool.ModelType.local), circle1, circle2, arrow);
+        controller = new ClientController(GameModelPool.Instance().GetModel(GameModelPool.ModelType.local), circle1, circle2);
     }
 
     private void HandleEvent(ArrowChanged arrowChanged)
@@ -43,9 +33,13 @@ public class GameController extends View {
         }
     }
 
+    int counter = 0;
+
     @FXML
     public void OnStartGame()
     {
+        counter++;
+        controller.OnNewPlayerAdded("Some name" + counter); // todo : change
         controller.OnStartGame();
         startButton.setDisable(true);
         stopButton.setDisable(false);

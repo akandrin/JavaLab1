@@ -6,7 +6,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.threadpanelfx.Controller.GameController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.threadpanelfx.Controller.GameClientController">
    <children>
       <SplitPane dividerPositions="0.7520325203252033" prefHeight="400.0" prefWidth="600.0">
         <items>
@@ -17,12 +17,7 @@
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
                               <Rectangle arcHeight="5.0" arcWidth="5.0" fill="YELLOW" height="346.0" stroke="BLACK" strokeType="INSIDE" width="54.0" />
-                              <Polygon fill="DODGERBLUE" layoutX="17.0" layoutY="190.0" points="-1.52587890625E-5, -1.0, 19.199996948242188, -24.0, -1.52587890625E-5, -47.00000762939453" stroke="BLACK" strokeType="INSIDE" />
-                              <Pane fx:id="arrow" layoutX="54.0" layoutY="155.0" prefHeight="15.0" prefWidth="45.0">
-                                 <children>
-                                    <Line endX="-74.6" endY="0" layoutX="115.0" layoutY="8.5" startX="-110.0" />
-                                    <Polygon layoutX="80.0" layoutY="24.0" points="-45.0, -9, -35.0, -15.75, -45.0, -22.5" stroke="BLACK" strokeType="INSIDE" />
-                                 </children></Pane>
+                              <VBox fx:id="playersVBox" alignment="CENTER_LEFT" layoutX="18.0" layoutY="-1.0" prefHeight="346.0" prefWidth="36.0" />
                               <Line endX="50.4000244140625" endY="284.4000244140625" layoutX="271.0" layoutY="62.0" startX="50.4000244140625" startY="-64.0" />
                               <Line endX="155.4000244140625" endY="274.4000244140625" layoutX="243.0" layoutY="72.0" startX="155.4000244140625" startY="-72.0" />
                               <Circle fx:id="circle1" layoutX="321.0" layoutY="166.0" radius="22.0" stroke="BLACK" strokeType="INSIDE">
@@ -71,6 +66,18 @@
                                        </RadialGradient>
                                    </fill>
                                </Circle>
+                              <VBox fx:id="m_arrowsVBox" alignment="CENTER" layoutX="54.0" layoutY="-1.0" prefHeight="346.0" prefWidth="394.0">
+                                  <!--
+                                  <children>
+                                    <HBox fx:id="arrow" alignment="CENTER_LEFT" prefHeight="173.0">
+                                        <children>
+                                            <Line endX="0" visible="false"/>
+                                            <Polygon points="-40, 0.5, 0, 0.5, 0, 5, 10, 0, 0, -5, 0, -0.5, -40, -0.5" stroke="BLACK" strokeType="INSIDE" />
+                                        </children>
+                                    </HBox>
+                                 </children>
+                                 -->
+                              </VBox>
                            </children></AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>

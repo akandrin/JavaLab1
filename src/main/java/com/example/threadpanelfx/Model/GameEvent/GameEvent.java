@@ -6,7 +6,8 @@ public interface GameEvent {
         arrowChanged,
         targetChanged,
         scoresChanged,
-        shotsChanged
+        shotsChanged,
+        newPlayerAdded
     }
     public Type GetType();
 }

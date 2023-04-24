@@ -4,12 +4,12 @@ import javafx.geometry.Point2D;
 
 public class TargetChanged implements GameEvent {
     private int m_targetNumber; // номер мишени (нулевая/первая мишены)
-    private Point2D m_newCoords;
+    private Point2D m_newCoordsAbs;
 
     public TargetChanged(int targetNumber, Point2D newCoords)
     {
         this.m_targetNumber = targetNumber;
-        this.m_newCoords = newCoords;
+        this.m_newCoordsAbs = newCoords;
     }
 
     public int GetTargetNumber()
@@ -17,9 +17,9 @@ public class TargetChanged implements GameEvent {
         return m_targetNumber;
     }
 
-    public Point2D GetCoords()
+    public Point2D GetCoordsAbs()
     {
-        return m_newCoords;
+        return m_newCoordsAbs;
     }
 
     @Override

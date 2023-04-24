@@ -4,12 +4,14 @@ import javafx.geometry.Point2D;
 
 public class ArrowChanged implements GameEvent {
     private boolean m_arrowIsVisible;
-    private Point2D m_newCoords;
+    private double m_newOffset; // смещение стрелы по оси X
+    private String m_playerName;
 
-    public ArrowChanged(boolean arrowIsVisible, Point2D newCoords)
+    public ArrowChanged(boolean arrowIsVisible, double newOffset, String playerName)
     {
-        m_arrowIsVisible = arrowIsVisible;
-        m_newCoords = newCoords;
+        this.m_arrowIsVisible = arrowIsVisible;
+        this.m_newOffset = newOffset;
+        this.m_playerName = playerName;
     }
 
     public boolean IsArrowVisible()
@@ -17,10 +19,12 @@ public class ArrowChanged implements GameEvent {
         return m_arrowIsVisible;
     }
 
-    public Point2D GetCoords()
+    public double GetOffset()
     {
-        return m_newCoords;
+        return m_newOffset;
     }
+
+    public String GetPlayerName() { return m_playerName; }
 
     @Override
     public Type GetType() {
