@@ -82,10 +82,6 @@ public class MessengerRunnable implements Runnable {
 
             m_currentMessageToBeSent.set(currentMessageToBeSent + 1);
         }
-        else
-        {
-            System.out.println("Nothing to send");
-        }
 
         return messageToSend != null;
     }

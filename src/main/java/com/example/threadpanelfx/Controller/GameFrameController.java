@@ -17,37 +17,9 @@ public abstract class GameFrameController extends View {
 
     protected IController controller;
 
-    private Point2D GetArrowHead(Polygon arrow)
-    {
-        var points = arrow.getPoints();
-        // ищем индекс максимальной x-координаты
-        double maxCoord = -Double.MAX_VALUE;
-        int maxIndex = 0;
-        for (int i = 0; i < points.size(); i += 2)
-        {
-            double xCoord = points.get(i);
-            if (xCoord > maxCoord)
-            {
-                maxCoord = xCoord;
-                maxIndex = i;
-            }
-        }
-        return new Point2D(points.get(maxIndex), points.get(maxIndex + 1));
-    }
 
-    private void UpdateArrowCoords()
+    protected void UpdateArrowCoords()
     {
-        synchronized (m_arrows) {
-            for (var arrowInfo : m_arrows.entrySet()) {
-                String playerName = arrowInfo.getKey();
-                HBox arrowBox = arrowInfo.getValue();
-                Polygon arrow = (Polygon) arrowBox.getChildren().get(1);
-
-                Point2D arrowHead = GetArrowHead(arrow);
-                Point2D arrowHeadAbs = arrow.localToScene(arrowHead);
-                m_model.SetArrowHeadStartPositionAbs(playerName, arrowHeadAbs);
-            }
-        }
     }
 
     protected void ActionBeforeNewPlayerAdded()
