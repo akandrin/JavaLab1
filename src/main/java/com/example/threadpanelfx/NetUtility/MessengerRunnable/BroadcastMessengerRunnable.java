@@ -15,10 +15,11 @@ public class BroadcastMessengerRunnable extends MessengerRunnable {
     }
 
     @Override
-    protected void sendMessage()
+    protected boolean sendMessage()
     {
         m_lock.readLock().lock();
-        super.sendMessage();
+        boolean result = super.sendMessage();
         m_lock.readLock().unlock();
+        return result;
     }
 }

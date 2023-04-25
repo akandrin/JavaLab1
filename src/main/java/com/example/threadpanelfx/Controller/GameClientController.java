@@ -3,25 +3,57 @@ package com.example.threadpanelfx.Controller;
 import com.example.threadpanelfx.Model.GameEvent.ArrowChanged;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
 import com.example.threadpanelfx.Model.GameModelPool;
-import com.example.threadpanelfx.View.View;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
-public class GameClientController extends View {
-    @FXML
-    Button startButton, stopButton, shotButton;
+public class GameClientController extends GameFrameController {
+    private Button m_startButton;
+    private Button m_stopButton;
+    private Button m_shotButton;
 
-    private ClientController controller;
+    static private Button createButton(String text, boolean isDisabled, EventHandler<ActionEvent> eventHandler)
+    {
+        Button button = new Button();
+        button.setText(text);
+        button.setMnemonicParsing(false);
+        button.setOnAction(eventHandler);
+        button.setDisable(isDisabled);
+        button.setPrefWidth(125);
+        return button;
+    }
 
     @FXML
     public void initialize() {
-        controller = new ClientController(GameModelPool.Instance().GetModel(GameModelPool.ModelType.local), circle1, circle2);
+        controller = new ClientController();
+        CurrentControllerHolder.Set(controller);
+
+        m_startButton = createButton("Начать игру", false, e -> OnStartGame());
+        m_stopButton = createButton("Остановить игру", true, e -> OnStopGame());
+        m_shotButton = createButton("Выстрел", true, e -> OnShot());
+        m_buttons.getChildren().addAll(m_startButton, m_stopButton, m_shotButton);
+    }
+
+    private boolean m_shotButtonIsDisabledPrevState;
+
+    @Override
+    protected void ActionBeforeNewPlayerAdded()
+    {
+        m_shotButtonIsDisabledPrevState = m_shotButton.isDisabled();
+        m_shotButton.setDisable(true);
+    }
+
+    @Override
+    protected void ActionAfterNewPlayerAdded()
+    {
+        m_shotButton.setDisable(m_shotButtonIsDisabledPrevState);
     }
 
     private void HandleEvent(ArrowChanged arrowChanged)
     {
         boolean isArrowVisible = arrowChanged.IsArrowVisible();
-        shotButton.setDisable(isArrowVisible);
+        m_shotButton.setDisable(isArrowVisible);
     }
 
     @Override
@@ -33,32 +65,25 @@ public class GameClientController extends View {
         }
     }
 
-    int counter = 0;
-
-    @FXML
     public void OnStartGame()
     {
-        counter++;
-        controller.OnNewPlayerAdded("Some name" + counter); // todo : change
-        controller.OnStartGame();
-        startButton.setDisable(true);
-        stopButton.setDisable(false);
-        shotButton.setDisable(false);
+        super.OnStartGame();
+        m_startButton.setDisable(true);
+        m_stopButton.setDisable(false);
+        m_shotButton.setDisable(false);
     }
 
-    @FXML
     public void OnStopGame()
     {
-        controller.OnStopGame();
-        startButton.setDisable(false);
-        stopButton.setDisable(true);
-        shotButton.setDisable(true);
+        super.OnStopGame();
+        m_startButton.setDisable(false);
+        m_stopButton.setDisable(true);
+        m_shotButton.setDisable(true);
     }
 
-    @FXML
     public void OnShot()
     {
-        shotButton.setDisable(true);
-        controller.OnShot("");
+        m_shotButton.setDisable(true);
+        super.OnShot();
     }
 }

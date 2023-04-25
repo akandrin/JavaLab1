@@ -5,6 +5,8 @@ import com.example.threadpanelfx.Model.GameModelPool;
 import com.example.threadpanelfx.Model.IGameModel;
 import com.example.threadpanelfx.Model.IObserver;
 import com.example.threadpanelfx.Model.IObservable;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
@@ -18,19 +20,18 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class View implements IObserver {
     @FXML
     protected Circle circle1, circle2;
-
-    @FXML
-    protected Label scoresLabel, shotsLabel;
 
     @FXML
     protected VBox playersVBox;
@@ -38,9 +39,13 @@ public class View implements IObserver {
     @FXML
     protected VBox m_arrowsVBox;
 
-    protected final Map<String/*playerName*/, HBox/*arrow (HBox with stretchre and Polygon)*/> m_arrows = new ConcurrentHashMap<>();
+    @FXML
+    protected VBox m_playersInfoBox;
 
-    private IGameModel m_model;
+    protected final Map<String/*playerName*/, HBox/*arrow (HBox with stretchre and Polygon)*/> m_arrows = new ConcurrentHashMap<>();
+    protected final Map<String/*playerName*/, VBox/*player info*/> m_playerInfoBoxMap = new ConcurrentHashMap<>();
+
+    protected IGameModel m_model;
 
     public View()
     {
@@ -55,12 +60,10 @@ public class View implements IObserver {
         HBox arrowBox = m_arrows.get(event.GetPlayerName());
 
         arrowBox.setVisible(isArrowVisible);
-        if (isArrowVisible)
-        {
-            double arrowOffset = event.GetOffset();
-            Line stretcher = (Line)arrowBox.getChildren().get(0);
-            stretcher.setEndX(arrowOffset);
-        }
+
+        double arrowOffset = event.GetOffset();
+        Line stretcher = (Line)arrowBox.getChildren().get(0);
+        stretcher.setEndX(arrowOffset);
     }
 
     private void HandleEvent(TargetChanged event)
@@ -82,48 +85,21 @@ public class View implements IObserver {
 
     private void HandleEvent(ScoresChanged event)
     {
+        String playerName = event.GetPlayerName();
+        VBox playerInfoBox = m_playerInfoBoxMap.get(playerName);
+        Label scoresLabel = getScoresLabelFromPlayerInfoBox(playerInfoBox);
         scoresLabel.setText(String.valueOf(event.GetScores()));
     }
 
     private void HandleEvent(ShotsChanged event)
     {
+        String playerName = event.GetPlayerName();
+        VBox playerInfoBox = m_playerInfoBoxMap.get(playerName);
+        Label shotsLabel = getShotsLabelFromPlayerInfoBox(playerInfoBox);
         shotsLabel.setText(String.valueOf(event.GetShots()));
     }
 
-    private Point2D GetArrowHead(Polygon arrow)
-    {
-        var points = arrow.getPoints();
-        // ищем индекс максимальной x-координаты
-        double maxCoord = -Double.MAX_VALUE;
-        int maxIndex = 0;
-        for (int i = 0; i < points.size(); i += 2)
-        {
-            double xCoord = points.get(i);
-            if (xCoord > maxCoord)
-            {
-                maxCoord = xCoord;
-                maxIndex = i;
-            }
-        }
-        return new Point2D(points.get(maxIndex), points.get(maxIndex + 1));
-    }
-
-    private void UpdateArrowCoords()
-    {
-        synchronized (m_arrows) {
-            for (var arrowInfo : m_arrows.entrySet()) {
-                String playerName = arrowInfo.getKey();
-                HBox arrowBox = arrowInfo.getValue();
-                Polygon arrow = (Polygon) arrowBox.getChildren().get(1);
-
-                Point2D arrowHead = GetArrowHead(arrow);
-                Point2D arrowHeadAbs = arrow.localToScene(arrowHead);
-                m_model.SetArrowHeadStartPositionAbs(playerName, arrowHeadAbs);
-            }
-        }
-    }
-
-    private static void UpdateBoxes(VBox box)
+    private static void AlignChildBoxes(VBox box)
     {
         var height = box.getHeight();
         var boxesCount = box.getChildren().size();
@@ -134,19 +110,19 @@ public class View implements IObserver {
         }
     }
 
-    private void HandleEvent(NewPlayerAdded event)
+    static private VBox getPlayerBox(String playerName)
     {
-        String playerName = event.GetPlayerName();
-
         VBox playerVBox = new VBox();
         playerVBox.setAlignment(Pos.CENTER_LEFT);
         Polygon playerTriangle = new Polygon();
         playerTriangle.getPoints().addAll(0.0, 24.0, 19.0, 0.0, 0.0, -24.0);
         playerVBox.getChildren().add(playerTriangle);
         playerVBox.getChildren().add(new Label(playerName));
-        playersVBox.getChildren().add(playerVBox);
-        UpdateBoxes(playersVBox);
+        return playerVBox;
+    }
 
+    static private HBox getArrowBox()
+    {
         // контейнер для стрелы (используется для выравнивания)
         HBox arrowBox = new HBox();
         arrowBox.setAlignment(Pos.CENTER_LEFT);
@@ -160,11 +136,57 @@ public class View implements IObserver {
         arrow.getPoints().addAll(-40.0, 0.5, 0.0, 0.5, 0.0, 5.0, 10.0, 0.0, 0.0, -5.0, 0.0, -0.5, -40.0, -0.5);
         arrowBox.getChildren().addAll(stretcher, arrow);
 
+        return arrowBox;
+    }
+
+    static private VBox getPlayerInfoBox(String playerName)
+    {
+        Function<String, Label> getBoldLabel = (String str) -> {
+            var label = new Label(str); label.setStyle("-fx-font-weight: bold;");
+            return label;
+        };
+
+        HBox playerNameBox = new HBox();
+        playerNameBox.getChildren().addAll(getBoldLabel.apply("Игрок: "), new Label(playerName));
+
+        HBox playerShotsBox = new HBox();
+        playerShotsBox.getChildren().addAll(getBoldLabel.apply("Счет игрока: "), new Label("0"));
+
+        HBox playerScoresBox = new HBox();
+        playerScoresBox.getChildren().addAll(getBoldLabel.apply("Выстрелов: "), new Label("0"));
+
+        VBox playerInfoBox = new VBox();
+        playerInfoBox.getChildren().addAll(playerNameBox, playerShotsBox, playerScoresBox);
+        return playerInfoBox;
+    }
+
+    static private Label getScoresLabelFromPlayerInfoBox(VBox playerInfoBox)
+    {
+        HBox playerScoresBox = (HBox)playerInfoBox.getChildren().get(1);
+        return (Label)playerScoresBox.getChildren().get(1);
+    }
+
+    static private Label getShotsLabelFromPlayerInfoBox(VBox playerInfoBox)
+    {
+        HBox playerScoresBox = (HBox)playerInfoBox.getChildren().get(2);
+        return (Label)playerScoresBox.getChildren().get(1);
+    }
+
+    private void HandleEvent(NewPlayerAdded event)
+    {
+        String playerName = event.GetPlayerName();
+
+        playersVBox.getChildren().add(getPlayerBox(playerName));
+        AlignChildBoxes(playersVBox);
+
+        HBox arrowBox = getArrowBox();
         m_arrowsVBox.getChildren().add(arrowBox);
         m_arrows.put(playerName, arrowBox);
+        AlignChildBoxes(m_arrowsVBox);
 
-        UpdateArrowCoords();
-        UpdateBoxes(m_arrowsVBox);
+        VBox playerInfoBox = getPlayerInfoBox(playerName);
+        m_playerInfoBoxMap.put(playerName, playerInfoBox);
+        m_playersInfoBox.getChildren().add(playerInfoBox);
     }
 
     @Override

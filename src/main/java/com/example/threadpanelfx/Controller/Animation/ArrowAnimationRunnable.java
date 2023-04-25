@@ -13,13 +13,11 @@ public class ArrowAnimationRunnable implements Runnable {
 
     private final AtomicBoolean m_isArrowShot = new AtomicBoolean(true);
 
-    public ArrowAnimationRunnable(IGameModel gameModel, String playerName, Point2D arrowHeadStartPositionAbs, double speed, TargetsAnimationRunnable targetsAnimation) {
+    public ArrowAnimationRunnable(IGameModel gameModel, String playerName, double speed, TargetsAnimationRunnable targetsAnimation) {
         this.m_gameModel = gameModel;
         this.m_playerName = playerName;
         this.m_targetsAnimation = targetsAnimation;
-
-        double arrowStartOffset = m_gameModel.GetArrowOffset(playerName);
-        this.m_arrowMover = new ArrowMover(m_gameModel, m_playerName, arrowStartOffset, arrowHeadStartPositionAbs, speed);
+        this.m_arrowMover = new ArrowMover(m_gameModel, m_playerName, speed);
     }
 
     public void StopArrow()
@@ -28,7 +26,7 @@ public class ArrowAnimationRunnable implements Runnable {
     }
 
     private boolean isArrowMissing() {
-        double arrowX = m_arrowMover.GetArrowOffset();
+        double arrowX = m_gameModel.GetArrowOffset(m_playerName);
         return arrowX >= 450;
     }
 
@@ -39,27 +37,29 @@ public class ArrowAnimationRunnable implements Runnable {
             if (isArrowMissing()) {
                 break;
             } else {
-                double arrowOffset = m_arrowMover.GetArrowOffset();
-                Point2D arrowHeadStartPositionAbs = m_arrowMover.GetArrowHeadStartPositionAbs();
-                Point2D arrowHeadPositionAbs = new Point2D(arrowHeadStartPositionAbs.getX() + arrowOffset, arrowHeadStartPositionAbs.getY());
-                int hitTarget = m_targetsAnimation.GetHitTarget(arrowHeadPositionAbs);
-                if (hitTarget != -1) {
-                    int scores = m_gameModel.GetScores(m_playerName);
-                    if (hitTarget == 0)
-                        scores += 1;
-                    else if (hitTarget == 1)
-                        scores += 2;
-                    else {
-                        throw new RuntimeException("Unknown target number");
+                double arrowOffset = m_gameModel.GetArrowOffset(m_playerName);
+                Point2D arrowHeadStartPositionAbs = m_gameModel.GetArrowHeadStartPositionAbs(m_playerName);
+                if (arrowHeadStartPositionAbs != null) {
+                    Point2D arrowHeadPositionAbs = new Point2D(arrowHeadStartPositionAbs.getX() + arrowOffset, arrowHeadStartPositionAbs.getY());
+                    int hitTarget = m_targetsAnimation.GetHitTarget(arrowHeadPositionAbs);
+                    if (hitTarget != -1) {
+                        int scores = m_gameModel.GetScores(m_playerName);
+                        if (hitTarget == 0)
+                            scores += 1;
+                        else if (hitTarget == 1)
+                            scores += 2;
+                        else {
+                            throw new RuntimeException("Unknown target number");
+                        }
+                        m_gameModel.SetScores(m_playerName, scores);
+                        break;
                     }
-                    m_gameModel.SetScores(m_playerName, scores);
-                    break;
                 }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         m_gameModel.SetArrowOffset(m_playerName, false, 0);

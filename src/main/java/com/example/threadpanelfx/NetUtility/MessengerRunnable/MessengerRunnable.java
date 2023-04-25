@@ -12,12 +12,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MessengerRunnable implements Runnable {
     private final Socket m_socket;
     private final int m_currentSocketNumber;
-    private final List<Message> m_messagesToSend;
-    private AtomicInteger m_currentMessageToBeSent;
+    protected final List<Message> m_messagesToSend;
+    private final AtomicInteger m_currentMessageToBeSent = new AtomicInteger();
     protected final List<Message> m_receivedMessages;
-
-    private ObjectInputStream m_reader;
-    private ObjectOutputStream m_writer;
 
     public MessengerRunnable(Socket socket, int currentSocketNumber, List<Message> messagesToSend, List<Message> receivedMessages) {
         this.m_socket = socket;
@@ -25,14 +22,6 @@ public class MessengerRunnable implements Runnable {
         this.m_messagesToSend = messagesToSend;
         this.m_currentMessageToBeSent.set(0);
         this.m_receivedMessages = receivedMessages;
-
-        try {
-            this.m_reader = new ObjectInputStream(m_socket.getInputStream());
-            this.m_writer = new ObjectOutputStream(m_socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-            printInfo();
-        }
     }
 
     public void SetCurrentMessageToBeSent(int currentMessageToBeSent)
@@ -54,17 +43,25 @@ public class MessengerRunnable implements Runnable {
     {
         Message receivedMessage = null;
         try {
-            receivedMessage = (Message) m_reader.readObject();
+            var reader = new ObjectInputStream(m_socket.getInputStream());
+            receivedMessage = (Message) reader.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             printInfo();
         }
-        System.out.println("Socket " + m_currentSocketNumber + " read message:");
-        System.out.println(receivedMessage);
-        m_receivedMessages.add(receivedMessage);
+        if (receivedMessage != null) {
+            System.out.println("Socket " + m_currentSocketNumber + " read message:");
+            System.out.println(receivedMessage);
+
+            m_receivedMessages.add(receivedMessage);
+        }
+        else
+        {
+            System.out.println("Socket " + m_currentSocketNumber + " does not send any message");
+        }
     }
 
-    protected void sendMessage()
+    protected boolean sendMessage()
     {
         Message messageToSend = null;
         int currentMessageToBeSent = m_currentMessageToBeSent.get();
@@ -72,20 +69,43 @@ public class MessengerRunnable implements Runnable {
         if (currentMessageToBeSent < m_messagesToSend.size()) {
             messageToSend = m_messagesToSend.get(currentMessageToBeSent);
         }
-        try {
-            m_writer.writeObject(messageToSend);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if (messageToSend != null) {
+            try {
+                var writer = new ObjectOutputStream(m_socket.getOutputStream());
+                System.out.println("Sending message " + messageToSend);
+                writer.writeObject(messageToSend);
+                System.out.println("... success");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            m_currentMessageToBeSent.set(currentMessageToBeSent + 1);
+        }
+        else
+        {
+            System.out.println("Nothing to send");
         }
 
-        m_currentMessageToBeSent.set(currentMessageToBeSent + 1);
+        return messageToSend != null;
     }
 
     @Override
     public void run() {
+        new Thread(()->{
+            while (true) {
+                // внутри блокирующий вызов
+                recvMessage();
+            }
+        }).start();
+
         while (true) {
-            recvMessage();
             sendMessage();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

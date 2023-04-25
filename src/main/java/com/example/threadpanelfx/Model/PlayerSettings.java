@@ -1,7 +1,7 @@
 package com.example.threadpanelfx.Model;
 
 public class PlayerSettings {
-    private static String m_playerName = "";
+    private static String m_playerName = "Some name2";
 
     public static void SetPlayerName(String playerName)
     {

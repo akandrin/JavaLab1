@@ -5,7 +5,8 @@ import com.example.threadpanelfx.Model.LocalGameModel;
 public class MessengerPool {
     public enum MessengerType
     {
-        asyncBroadcast
+        asyncBroadcast,
+        asyncSingle
     }
 
     private static MessengerPool instance;
@@ -30,6 +31,9 @@ public class MessengerPool {
         {
             case asyncBroadcast:
                 messenger = AsyncBroadcastMessenger.Instance();
+                break;
+            case asyncSingle:
+                messenger = AsyncSingleMessenger.Instance();
                 break;
             default:
                 throw new RuntimeException("Unknown messenger type");

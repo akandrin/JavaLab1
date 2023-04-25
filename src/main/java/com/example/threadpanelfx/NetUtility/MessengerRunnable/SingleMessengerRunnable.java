@@ -6,18 +6,21 @@ import java.net.Socket;
 import java.util.List;
 
 public class SingleMessengerRunnable extends MessengerRunnable {
-    public SingleMessengerRunnable(Socket socket, int currentSocketNumber, List<Message> messagesToSend, List<Message> receivedMessages) {
-        super(socket, currentSocketNumber, messagesToSend, receivedMessages);
+    public SingleMessengerRunnable(Socket socket, List<Message> messagesToSend, List<Message> receivedMessages) {
+        super(socket, 0, messagesToSend, receivedMessages);
     }
 
     @Override
-    protected void sendMessage() {
-        super.sendMessage();
-        synchronized (this.m_receivedMessages)
-        {
-            int currentMessageToBeSent = GetCurrentMessageToBeSent();
-            m_receivedMessages.remove(currentMessageToBeSent);
-            SetCurrentMessageToBeSent(currentMessageToBeSent - 1);
+    protected boolean sendMessage() {
+        boolean result = super.sendMessage();
+        if (result) {
+            synchronized (this.m_messagesToSend) {
+                int currentMessageToBeSent = GetCurrentMessageToBeSent();
+                currentMessageToBeSent -= 1;
+                SetCurrentMessageToBeSent(currentMessageToBeSent);
+                m_messagesToSend.remove(currentMessageToBeSent);
+            }
         }
+        return result;
     }
 }

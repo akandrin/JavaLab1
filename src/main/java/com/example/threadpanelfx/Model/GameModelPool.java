@@ -3,12 +3,14 @@ package com.example.threadpanelfx.Model;
 public class GameModelPool {
     public enum ModelType
     {
-        local
+        local,
+        remote
     }
 
     private static GameModelPool instance;
 
     private LocalGameModel m_localGameModel;
+    //private RemoteGameModel m_remoteGameModel;
 
     private GameModelPool()
     {
@@ -32,6 +34,9 @@ public class GameModelPool {
             case local:
                 model = m_localGameModel;
                 break;
+            /*case remote:
+                model = m_remoteGameModel;
+                break;*/
             default:
                 throw new RuntimeException("Unknown model type");
         }
