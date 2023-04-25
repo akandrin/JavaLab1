@@ -5,26 +5,17 @@ import com.example.threadpanelfx.Model.GameModelPool;
 import com.example.threadpanelfx.Model.IGameModel;
 import com.example.threadpanelfx.Model.IObserver;
 import com.example.threadpanelfx.Model.IObservable;
-import javafx.animation.PauseTransition;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.text.Text;
-import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -77,7 +68,7 @@ public class View implements IObserver {
 
         assert target != null;
 
-        Point2D coordsAbs = event.GetCoordsAbs();
+        Point2D coordsAbs = event.GetCoordsAbs().ToPoint2D();
         Point2D coords = target.sceneToLocal(coordsAbs);
         target.setCenterX(coords.getX());
         target.setCenterY(coords.getY());

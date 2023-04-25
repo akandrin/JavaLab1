@@ -1,8 +1,9 @@
 package com.example.threadpanelfx.Controller;
 
+import com.example.threadpanelfx.Controller.MessageHandler.ClientMessageHandlerRunnable;
 import com.example.threadpanelfx.Model.GameEvent.ArrowChanged;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
-import com.example.threadpanelfx.Model.GameModelPool;
+import com.example.threadpanelfx.NetUtility.MessengerPool;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -12,6 +13,13 @@ public class GameClientController extends GameFrameController {
     private Button m_startButton;
     private Button m_stopButton;
     private Button m_shotButton;
+
+    public GameClientController()
+    {
+        var messageHandlerRunnable = new ClientMessageHandlerRunnable(MessengerPool.Instance().GetMessenger(MessengerPool.MessengerType.asyncSingle));
+        messageHandlerRunnable.AddObserver(this);
+        new Thread(messageHandlerRunnable).start();
+    }
 
     static private Button createButton(String text, boolean isDisabled, EventHandler<ActionEvent> eventHandler)
     {

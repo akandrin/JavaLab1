@@ -1,6 +1,8 @@
 package com.example.threadpanelfx.Model.GameEvent;
 
-public class ShotsChanged implements GameEvent {
+import java.io.Serializable;
+
+public class ShotsChanged extends GameEvent {
     private String m_playerName;
     private int m_newShots;
 

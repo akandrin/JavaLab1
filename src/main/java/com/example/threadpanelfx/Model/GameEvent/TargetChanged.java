@@ -1,15 +1,18 @@
 package com.example.threadpanelfx.Model.GameEvent;
 
+import com.example.threadpanelfx.Model.Utility.Point;
 import javafx.geometry.Point2D;
 
-public class TargetChanged implements GameEvent {
+import java.io.Serializable;
+
+public class TargetChanged extends GameEvent {
     private int m_targetNumber; // номер мишени (нулевая/первая мишены)
-    private Point2D m_newCoordsAbs;
+    private Point m_newCoordsAbs;
 
     public TargetChanged(int targetNumber, Point2D newCoords)
     {
         this.m_targetNumber = targetNumber;
-        this.m_newCoordsAbs = newCoords;
+        this.m_newCoordsAbs = new Point(newCoords);
     }
 
     public int GetTargetNumber()
@@ -17,7 +20,7 @@ public class TargetChanged implements GameEvent {
         return m_targetNumber;
     }
 
-    public Point2D GetCoordsAbs()
+    public Point GetCoordsAbs()
     {
         return m_newCoordsAbs;
     }

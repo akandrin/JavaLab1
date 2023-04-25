@@ -1,8 +1,9 @@
 package com.example.threadpanelfx.Model.GameEvent;
 
-import javafx.geometry.Point2D;
+import java.io.Serializable;
 
-public class ArrowChanged implements GameEvent {
+
+public class ArrowChanged extends GameEvent {
     private boolean m_arrowIsVisible;
     private double m_newOffset; // смещение стрелы по оси X
     private String m_playerName;

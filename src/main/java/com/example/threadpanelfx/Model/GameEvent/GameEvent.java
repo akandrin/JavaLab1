@@ -1,7 +1,9 @@
 package com.example.threadpanelfx.Model.GameEvent;
 
-public interface GameEvent {
-    enum Type
+import java.io.Serializable;
+
+public abstract class GameEvent implements Serializable {
+    public enum Type
     {
         arrowChanged,
         targetChanged,
@@ -9,5 +11,5 @@ public interface GameEvent {
         shotsChanged,
         newPlayerAdded
     }
-    public Type GetType();
+    abstract public Type GetType();
 }
