@@ -17,4 +17,6 @@ module com.example.threadpanelfx {
     opens com.example.threadpanelfx.Controller.Animation to javafx.fxml;
     exports com.example.threadpanelfx.Controller.MessageHandler;
     opens com.example.threadpanelfx.Controller.MessageHandler to javafx.fxml;
+    exports com.example.threadpanelfx.Controller.JavaFXController;
+    opens com.example.threadpanelfx.Controller.JavaFXController to javafx.fxml;
 }

@@ -10,7 +10,7 @@ public class LocalGameModel extends Observable implements IGameModel {
     private ArrayList<PlayerInfo> m_playerInfoList;
     private ArrayList<Point2D> m_targetPositionAbsList; // две мишени
 
-    private PlayerInfo getPlayerInfo(String name)
+    private PlayerInfo getPlayerInfoNoThrow(String name)
     {
         if (name == null)
         {
@@ -28,6 +28,12 @@ public class LocalGameModel extends Observable implements IGameModel {
             }
         }
 
+        return result;
+    }
+
+    private PlayerInfo getPlayerInfo(String name)
+    {
+        PlayerInfo result = getPlayerInfo(name);
         if (result == null)
             throw new RuntimeException("Name not found");
 
@@ -130,9 +136,13 @@ public class LocalGameModel extends Observable implements IGameModel {
 
     @Override
     public void AddPlayer(String playerName) {
-        PlayerInfo playerInfo = new PlayerInfo();
-        playerInfo.name = playerName;
-        m_playerInfoList.add(playerInfo);
-        Notify(new NewPlayerAdded(playerName));
+        PlayerInfo existedPlayerInfo = getPlayerInfoNoThrow(playerName);
+        boolean needToAdd = existedPlayerInfo == null;
+        if (needToAdd) {
+            PlayerInfo playerInfo = new PlayerInfo();
+            playerInfo.name = playerName;
+            m_playerInfoList.add(playerInfo);
+        }
+        Notify(new NewPlayerAdded(playerName, needToAdd));
     }
 }

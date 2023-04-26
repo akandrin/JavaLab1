@@ -1,50 +1,78 @@
 package com.example.threadpanelfx.NetUtility;
 
-import com.example.threadpanelfx.NetUtility.MessengerRunnable.BroadcastMessengerRunnable;
-import com.example.threadpanelfx.NetUtility.MessengerRunnable.MessengerRunnable;
-import com.example.threadpanelfx.NetUtility.MessengerRunnable.SingleMessengerRunnable;
-
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
-// Занимается приемом/отправкой *всех* сообщений со стороны клиента.
 public class AsyncSingleMessenger implements IMessenger {
+    private final Socket m_socket;
 
-    // Collections.synchronizedList - для синхронизированных операций add/remove.
-    private final List<Message> m_messagesToSend = Collections.synchronizedList(new ArrayList<Message>());
-    private final List<Message> m_receivedMessages = Collections.synchronizedList(new ArrayList<Message>());
+    private List<Message> m_messageToSend = Collections.synchronizedList(new ArrayList<>());
+    private List<Message> m_receivedMessages = Collections.synchronizedList(new ArrayList<>());
 
-    private Socket m_clientSocket;
+    public AsyncSingleMessenger(Socket socket) {
+        this.m_socket = socket;
 
-    private static IMessenger m_instance;
-
-    private AsyncSingleMessenger() {
-        try {
-            m_clientSocket = new Socket(NetConstants.serverHostname, NetConstants.serverPort);
-        } catch (IOException e) {
-            e.printStackTrace();
+        // поток по приему сообщений
+        new Thread(() ->
+        {
+            while (true) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Message message = null;
+                try {
+                    var reader = new ObjectInputStream(m_socket.getInputStream());
+                    System.out.println("Receiving message...");
+                    message = (Message) reader.readObject();
+                    System.out.println("... received: " + message);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                if (message != null) {
+                    m_receivedMessages.add(message);
+                }
+            }
         }
+        ).start();
 
-        // поток по приему/отправке сообщений для одного сокета
-        MessengerRunnable messenger = new SingleMessengerRunnable(m_clientSocket, m_messagesToSend, m_receivedMessages);
-        new Thread(messenger).start();
-    }
-
-    protected static IMessenger Instance() {
-        if (m_instance == null) {
-            m_instance = new AsyncSingleMessenger();
-        }
-        return m_instance;
+        // поток по передаче сообщений
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (!m_messageToSend.isEmpty()) {
+                        Message message = m_messageToSend.get(0);
+                        m_messageToSend.remove(0);
+                        var writer = new ObjectOutputStream(m_socket.getOutputStream());
+                        System.out.println("Sending message " + message);
+                        writer.writeObject(message);
+                        System.out.println("... success");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
     public void SendMessage(Message message) {
-        m_messagesToSend.add(message);
+        if (message != null) {
+            m_messageToSend.add(message);
+        }
     }
 
     @Override
@@ -54,8 +82,13 @@ public class AsyncSingleMessenger implements IMessenger {
 
     @Override
     public Message ReceiveMessage() {
-        Message message = m_receivedMessages.get(0);
-        m_receivedMessages.remove(0);
+        Message message = null;
+        synchronized (m_receivedMessages) {
+            if (!m_receivedMessages.isEmpty()) {
+                message = m_receivedMessages.get(0);
+                m_receivedMessages.remove(0);
+            }
+        }
         return message;
     }
 }

@@ -1,7 +1,8 @@
-package com.example.threadpanelfx.Controller;
+package com.example.threadpanelfx.Controller.JavaFXController;
 
-import com.example.threadpanelfx.Controller.MessageHandler.MessageHandlerRunnable;
+import com.example.threadpanelfx.Controller.CurrentControllerHolder;
 import com.example.threadpanelfx.Controller.MessageHandler.ServerMessageHandlerRunnable;
+import com.example.threadpanelfx.Controller.ServerController;
 import com.example.threadpanelfx.Model.GameModelPool;
 import com.example.threadpanelfx.Model.IObservable;
 import com.example.threadpanelfx.NetUtility.EventSender;

@@ -1,5 +1,7 @@
-package com.example.threadpanelfx.Controller;
+package com.example.threadpanelfx.Controller.JavaFXController;
 
+import com.example.threadpanelfx.Controller.ClientController;
+import com.example.threadpanelfx.Controller.CurrentControllerHolder;
 import com.example.threadpanelfx.Controller.MessageHandler.ClientMessageHandlerRunnable;
 import com.example.threadpanelfx.Model.GameEvent.ArrowChanged;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;

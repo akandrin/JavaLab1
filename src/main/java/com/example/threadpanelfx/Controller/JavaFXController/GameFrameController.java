@@ -1,5 +1,6 @@
-package com.example.threadpanelfx.Controller;
+package com.example.threadpanelfx.Controller.JavaFXController;
 
+import com.example.threadpanelfx.Controller.IController;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
 import com.example.threadpanelfx.Model.GameEvent.NewPlayerAdded;
 import com.example.threadpanelfx.Model.PlayerSettings;

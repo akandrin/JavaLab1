@@ -1,7 +1,6 @@
 package com.example.threadpanelfx.View;
 
-import com.example.threadpanelfx.Controller.GameClientController;
-import com.example.threadpanelfx.Controller.GameServerController;
+import com.example.threadpanelfx.Controller.JavaFXController.GameServerController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

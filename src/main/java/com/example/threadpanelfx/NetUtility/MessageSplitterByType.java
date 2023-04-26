@@ -33,8 +33,6 @@ public class MessageSplitterByType {
 
     static public void Initialize(IMessenger messenger)
     {
-        if (instance.m_messenger != null)
-            throw new RuntimeException("Already initialized");
         if (messenger == null)
             throw new RuntimeException("Messenger is null");
 

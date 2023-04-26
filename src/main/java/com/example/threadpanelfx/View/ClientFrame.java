@@ -1,6 +1,6 @@
 package com.example.threadpanelfx.View;
 
-import com.example.threadpanelfx.Controller.GameClientController;
+import com.example.threadpanelfx.Controller.JavaFXController.GameClientController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,10 +12,11 @@ public class ClientFrame extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(ServerFrame.class.getResource("Game.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ClientFrame.class.getResource("Game.fxml"));
         fxmlLoader.setController(new GameClientController());
+        //FXMLLoader fxmlLoader = new FXMLLoader(ClientFrame.class.getResource("Login.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Game");
+        stage.setTitle("Login");
         stage.setScene(scene);
         stage.show();
     }

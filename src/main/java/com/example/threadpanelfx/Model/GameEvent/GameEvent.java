@@ -9,7 +9,8 @@ public abstract class GameEvent implements Serializable {
         targetChanged,
         scoresChanged,
         shotsChanged,
-        newPlayerAdded
+        newPlayerAdded,
+        nameAvailabilityCheck
     }
     abstract public Type GetType();
 }

@@ -9,15 +9,22 @@ import com.example.threadpanelfx.NetUtility.MessageSplitterByType;
 import com.example.threadpanelfx.NetUtility.MessengerPool;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class MessageHandlerRunnable implements Runnable {
 
     private final MessageSplitterByType m_messageSplitter;
+    private final AtomicBoolean m_isRunning = new AtomicBoolean(true);
 
     public MessageHandlerRunnable(IMessenger messenger)
     {
         MessageSplitterByType.Initialize(messenger);
         this.m_messageSplitter = MessageSplitterByType.Instance();
+    }
+
+    public void Stop()
+    {
+        m_isRunning.set(false);
     }
 
     abstract protected void Handle(GameEvent event);
@@ -38,7 +45,7 @@ public abstract class MessageHandlerRunnable implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (m_isRunning.get()) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
