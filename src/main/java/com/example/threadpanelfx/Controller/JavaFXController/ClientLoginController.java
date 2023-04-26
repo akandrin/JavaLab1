@@ -8,8 +8,14 @@ import com.example.threadpanelfx.Model.GameEvent.GameEvent;
 import com.example.threadpanelfx.Model.GameEvent.NewPlayerAdded;
 import com.example.threadpanelfx.Model.IObserver;
 import com.example.threadpanelfx.Model.PlayerSettings;
+import com.example.threadpanelfx.NetUtility.IMessenger;
+import com.example.threadpanelfx.NetUtility.Message;
 import com.example.threadpanelfx.NetUtility.MessengerPool;
+import com.example.threadpanelfx.NetUtility.Request.CheckNameRequest;
+import com.example.threadpanelfx.NetUtility.Request.CheckNameResponse;
+import com.example.threadpanelfx.NetUtility.Request.Response;
 import com.example.threadpanelfx.View.ClientFrame;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -22,10 +28,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Timer;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ClientLoginController implements IObserver {
+public class ClientLoginController {
     @FXML
     protected Button m_setNameButton, m_readyForGameButton;
 
@@ -34,18 +41,6 @@ public class ClientLoginController implements IObserver {
 
     @FXML
     protected AnchorPane m_pane;
-
-    protected IController controller;
-
-    private final ClientMessageHandlerRunnable m_messageHandlerRunnable;
-
-    public ClientLoginController()
-    {
-        controller = new ClientController();
-        m_messageHandlerRunnable = new ClientMessageHandlerRunnable(MessengerPool.Instance().GetMessenger(MessengerPool.MessengerType.asyncSingle));
-        m_messageHandlerRunnable.AddObserver(this);
-        new Thread(m_messageHandlerRunnable).start();
-    }
 
     @FXML
     public void OnSetName()
@@ -63,7 +58,47 @@ public class ClientLoginController implements IObserver {
 
         m_setNameButton.setDisable(true);
         PlayerSettings.SetPlayerName(playerName);
-        controller.OnNewPlayerAdded(playerName);
+        IMessenger messenger = MessengerPool.Instance().GetMessenger(MessengerPool.MessengerType.asyncSingle);
+        messenger.SendMessage(new CheckNameRequest(playerName).CreateRequestMessage(null, "server"));
+
+        AtomicBoolean responseStatus = new AtomicBoolean(false);
+
+        var messageHandlerRunnable = new ClientMessageHandlerRunnable(MessengerPool.Instance().GetMessenger(MessengerPool.MessengerType.asyncSingle))
+        {
+            @Override
+            protected void HandleResponse(Message responseMessage)
+            {
+                Response response = (Response)responseMessage.data;
+                if (response.GetType() == Response.ResponseType.checkName) {
+                    var checkNameResponse = (CheckNameResponse) response;
+
+                    responseStatus.set(checkNameResponse.GetStatus());
+                }
+                else
+                {
+                    super.HandleResponse(responseMessage);
+                }
+                Stop();
+            }
+        };
+        CompletableFuture.runAsync(messageHandlerRunnable).thenRun(() -> {
+            if (responseStatus.get()) {
+                // удалось добавить
+                Platform.runLater(this::switchSceneToGame);
+                // m_readyForGameButton.setDisable(false);
+            } else {
+                // Не удалось добавить
+                PlayerSettings.SetPlayerName(null);
+                Platform.runLater(() -> {
+                    m_setNameButton.setDisable(false);
+
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Ошибка");
+                    alert.setContentText("Игрок с таким именем уже существует");
+                    alert.showAndWait();
+                });
+            }
+        });
     }
 
     @FXML
@@ -86,49 +121,5 @@ public class ClientLoginController implements IObserver {
         stage.setTitle("Game");
         stage.setScene(scene);
         stage.show();
-    }
-
-    private void HandleEvent(NewPlayerAdded newPlayerAdded)
-    {
-        String playerName = newPlayerAdded.GetPlayerName();
-        boolean isMyName = playerName.equals(PlayerSettings.GetPlayerName());
-
-        if (isMyName)
-        {
-            if (newPlayerAdded.GetStatus())
-            {
-                // удалось добавить
-                m_messageHandlerRunnable.Stop();
-                switchSceneToGame();
-
-                //m_readyForGameButton.setDisable(false);
-
-            }
-            else
-            {
-                PlayerSettings.SetPlayerName(null);
-                // Не удалось добавить
-                m_setNameButton.setDisable(false);
-
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Ошибка");
-                alert.setContentText("Игрок с таким именем уже существует");
-                alert.showAndWait();
-            }
-        }
-    }
-
-    @Override
-    public void Update(Object event) {
-        var gameEvent = (GameEvent)event;
-        if (gameEvent.GetType() == GameEvent.Type.newPlayerAdded)
-        {
-            HandleEvent((NewPlayerAdded) gameEvent);
-        }
-    }
-
-    @Override
-    public boolean CanImmediatelyUpdate() {
-        return false;
     }
 }

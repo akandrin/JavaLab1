@@ -1,14 +1,12 @@
 package com.example.threadpanelfx.Controller.MessageHandler;
 
-import com.example.threadpanelfx.Controller.IController;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
 import com.example.threadpanelfx.NetUtility.IMessenger;
 import com.example.threadpanelfx.NetUtility.Invoker.RequestCall;
 import com.example.threadpanelfx.NetUtility.Message;
 import com.example.threadpanelfx.NetUtility.MessageSplitterByType;
-import com.example.threadpanelfx.NetUtility.MessengerPool;
+import com.example.threadpanelfx.NetUtility.Request.Request;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class MessageHandlerRunnable implements Runnable {
@@ -28,7 +26,8 @@ public abstract class MessageHandlerRunnable implements Runnable {
     }
 
     abstract protected void Handle(GameEvent event);
-
+    abstract protected void HandleRequest(Message request);
+    abstract protected void HandleResponse(Message response);
     abstract protected void Handle(RequestCall.Call requestCall);
 
     private Message getMessage(Message.DataType dataType)
@@ -56,6 +55,20 @@ public abstract class MessageHandlerRunnable implements Runnable {
                 if (eventMessage != null)
                 {
                     Handle((GameEvent)eventMessage.data);
+                }
+            }
+            {
+                Message requestMessage = getMessage(Message.DataType.request);
+                if (requestMessage != null)
+                {
+                    HandleRequest(requestMessage);
+                }
+            }
+            {
+                Message requestMessage = getMessage(Message.DataType.response);
+                if (requestMessage != null)
+                {
+                    HandleResponse(requestMessage);
                 }
             }
             {

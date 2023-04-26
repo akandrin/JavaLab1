@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class LocalGameModel extends Observable implements IGameModel {
-    private ArrayList<PlayerInfo> m_playerInfoList;
-    private ArrayList<Point2D> m_targetPositionAbsList; // две мишени
+    private final ArrayList<String> m_playerNameList = new ArrayList<>(); // используется до начала игры
+    private final ArrayList<PlayerInfo> m_playerInfoList = new ArrayList<>();
+    private final ArrayList<Point2D> m_targetPositionAbsList = new ArrayList<>(); // две мишени
 
     private PlayerInfo getPlayerInfoNoThrow(String name)
     {
@@ -33,17 +34,11 @@ public class LocalGameModel extends Observable implements IGameModel {
 
     private PlayerInfo getPlayerInfo(String name)
     {
-        PlayerInfo result = getPlayerInfo(name);
+        PlayerInfo result = getPlayerInfoNoThrow(name);
         if (result == null)
             throw new RuntimeException("Name not found");
 
         return result;
-    }
-
-    public LocalGameModel()
-    {
-        this.m_playerInfoList = new ArrayList<>();
-        this.m_targetPositionAbsList = new ArrayList<>();
     }
 
     @Override
@@ -143,6 +138,15 @@ public class LocalGameModel extends Observable implements IGameModel {
             playerInfo.name = playerName;
             m_playerInfoList.add(playerInfo);
         }
-        Notify(new NewPlayerAdded(playerName, needToAdd));
+        Notify(new NewPlayerAdded(playerName));
+    }
+
+    @Override
+    public boolean AddPlayerBeforeGameStarts(String playerName) {
+        if(m_playerNameList.contains(playerName))
+            return false;
+
+        m_playerNameList.add(playerName);
+        return true;
     }
 }

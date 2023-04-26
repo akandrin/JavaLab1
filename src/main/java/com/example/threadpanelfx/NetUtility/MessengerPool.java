@@ -25,7 +25,7 @@ public class MessengerPool {
         return instance;
     }
 
-    public IMessenger GetMessenger(MessengerPool.MessengerType messengerType)
+    public IMessenger GetMessenger(MessengerPool.MessengerType messengerType, Object ... args)
     {
         IMessenger messenger = null;
         switch (messengerType)
@@ -34,15 +34,22 @@ public class MessengerPool {
                 messenger = AsyncBroadcastMessenger.Instance();
                 break;
             case asyncSingle:
-                if (m_asyncSingleMessenger == null)
-                {
-                    try {
-                        m_asyncSingleMessenger = new AsyncSingleMessenger(new Socket(NetConstants.serverHostname, NetConstants.serverPort));
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                if (args.length == 0) {
+                    if (m_asyncSingleMessenger == null) {
+                        try {
+                            m_asyncSingleMessenger = new AsyncSingleMessenger(new Socket(NetConstants.serverHostname, NetConstants.serverPort));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    messenger = m_asyncSingleMessenger;
                 }
-                messenger = m_asyncSingleMessenger;
+                else
+                {
+                    assert args[0] instanceof Socket;
+                    Socket socket = (Socket)args[0];
+                    messenger = AsyncBroadcastMessenger.Instance().GetMessenger(socket);
+                }
                 break;
             default:
                 throw new RuntimeException("Unknown messenger type");

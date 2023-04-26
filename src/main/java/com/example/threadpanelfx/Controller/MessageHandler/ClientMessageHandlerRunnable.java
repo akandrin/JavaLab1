@@ -6,6 +6,9 @@ import com.example.threadpanelfx.Model.IObservable;
 import com.example.threadpanelfx.Model.IObserver;
 import com.example.threadpanelfx.NetUtility.IMessenger;
 import com.example.threadpanelfx.NetUtility.Invoker.RequestCall;
+import com.example.threadpanelfx.NetUtility.Message;
+import com.example.threadpanelfx.NetUtility.Request.Request;
+import com.example.threadpanelfx.NetUtility.Request.Response;
 import javafx.application.Platform;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +26,16 @@ public class ClientMessageHandlerRunnable extends MessageHandlerRunnable impleme
     protected void Handle(GameEvent event)
     {
         Notify(event);
+    }
+
+    @Override
+    protected void HandleRequest(Message requestMessage) {
+        System.err.println("Error: Client does not receive requests");
+    }
+
+    @Override
+    protected void HandleResponse(Message responseMessage) {
+        assert responseMessage.dataType == Message.DataType.response;
     }
 
     @Override

@@ -12,9 +12,9 @@ public class ClientFrame extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(ClientFrame.class.getResource("Game.fxml"));
-        fxmlLoader.setController(new GameClientController());
-        //FXMLLoader fxmlLoader = new FXMLLoader(ClientFrame.class.getResource("Login.fxml"));
+        //FXMLLoader fxmlLoader = new FXMLLoader(ClientFrame.class.getResource("Game.fxml"));
+        //fxmlLoader.setController(new GameClientController());
+        FXMLLoader fxmlLoader = new FXMLLoader(ClientFrame.class.getResource("Login.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Login");
         stage.setScene(scene);

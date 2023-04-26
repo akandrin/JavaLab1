@@ -3,7 +3,6 @@ package com.example.threadpanelfx.NetUtility.Invoker;
 import com.example.threadpanelfx.NetUtility.Message;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 
 public class RequestCall implements Serializable
 {

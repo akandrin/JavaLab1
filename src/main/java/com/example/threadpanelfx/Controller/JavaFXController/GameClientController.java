@@ -5,6 +5,7 @@ import com.example.threadpanelfx.Controller.CurrentControllerHolder;
 import com.example.threadpanelfx.Controller.MessageHandler.ClientMessageHandlerRunnable;
 import com.example.threadpanelfx.Model.GameEvent.ArrowChanged;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
+import com.example.threadpanelfx.Model.PlayerSettings;
 import com.example.threadpanelfx.NetUtility.MessengerPool;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -62,8 +63,12 @@ public class GameClientController extends GameFrameController {
 
     private void HandleEvent(ArrowChanged arrowChanged)
     {
+        String playerName = arrowChanged.GetPlayerName();
         boolean isArrowVisible = arrowChanged.IsArrowVisible();
-        m_shotButton.setDisable(isArrowVisible);
+        if (playerName.equals(PlayerSettings.GetPlayerName())) {
+            // если изменилась стрела у текущего игрока
+            m_shotButton.setDisable(isArrowVisible);
+        }
     }
 
     @Override
@@ -77,7 +82,8 @@ public class GameClientController extends GameFrameController {
 
     public void OnStartGame()
     {
-        super.OnStartGame();
+        controller.OnNewPlayerAdded(PlayerSettings.GetPlayerName());
+        controller.OnStartGame();
         m_startButton.setDisable(true);
         m_stopButton.setDisable(false);
         m_shotButton.setDisable(false);
@@ -85,7 +91,7 @@ public class GameClientController extends GameFrameController {
 
     public void OnStopGame()
     {
-        super.OnStopGame();
+        controller.OnStopGame();
         m_startButton.setDisable(false);
         m_stopButton.setDisable(true);
         m_shotButton.setDisable(true);
@@ -94,6 +100,6 @@ public class GameClientController extends GameFrameController {
     public void OnShot()
     {
         m_shotButton.setDisable(true);
-        super.OnShot();
+        controller.OnShot(PlayerSettings.GetPlayerName());
     }
 }

@@ -56,22 +56,4 @@ public abstract class GameFrameController extends View {
             HandleEvent((NewPlayerAdded) gameEvent);
         }
     }
-
-    protected int counter = 2;
-
-    public void OnStartGame()
-    {
-        controller.OnNewPlayerAdded("Some name" + counter); // todo : change
-        controller.OnStartGame();
-    }
-
-    public void OnStopGame()
-    {
-        controller.OnStopGame();
-    }
-
-    public void OnShot()
-    {
-        controller.OnShot(PlayerSettings.GetPlayerName());
-    }
 }

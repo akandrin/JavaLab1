@@ -5,10 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class AsyncSingleMessenger implements IMessenger {
     private final Socket m_socket;
@@ -33,6 +31,7 @@ public class AsyncSingleMessenger implements IMessenger {
                     var reader = new ObjectInputStream(m_socket.getInputStream());
                     System.out.println("Receiving message...");
                     message = (Message) reader.readObject();
+                    message.addresser = m_socket;
                     System.out.println("... received: " + message);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();

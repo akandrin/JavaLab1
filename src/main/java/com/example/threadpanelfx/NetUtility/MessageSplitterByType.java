@@ -12,6 +12,8 @@ public class MessageSplitterByType {
     private MessageSplitterByType()
     {
         m_typeToMessages.put(Message.DataType.event, Collections.synchronizedList(new ArrayList<Message>()));
+        m_typeToMessages.put(Message.DataType.response, Collections.synchronizedList(new ArrayList<Message>()));
+        m_typeToMessages.put(Message.DataType.request, Collections.synchronizedList(new ArrayList<Message>()));
         m_typeToMessages.put(Message.DataType.requestCall, Collections.synchronizedList(new ArrayList<Message>()));
         new Thread(()->{
             while (true) {
