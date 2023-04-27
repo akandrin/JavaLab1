@@ -26,8 +26,19 @@ public interface IGameModel {
     void AddPlayer(String playerName);
 
     boolean AddPlayerBeforeGameStarts(String playerName);
-    boolean UpdatePlayerBeforeGameStarts(String playerName, boolean isPlayerReady);
+    boolean UpdatePlayerState(String playerName, boolean isPlayerReady);
     boolean PlayersReady();
     void AddReadyPlayers();
-    void ClearPlayersBeforeGameStarts();
+
+    enum GameState
+    {
+        started,
+        paused,
+        stopped
+    }
+    void SetGameStarted();
+    void SetGamePaused(String playerName);
+    void SetGameStopped();
+    GameState GetGameState();
+
 }

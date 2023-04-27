@@ -20,7 +20,12 @@ public class ArrowAnimationRunnable implements Runnable {
         this.m_arrowMover = new ArrowMover(m_gameModel, m_playerName, speed);
     }
 
-    public void StopArrow()
+    public void PlayArrow()
+    {
+        m_isArrowShot.set(true);
+    }
+
+    public void PauseArrow()
     {
         m_isArrowShot.set(false);
     }
@@ -32,7 +37,14 @@ public class ArrowAnimationRunnable implements Runnable {
 
     @Override
     public void run() {
-        while (m_isArrowShot.get()) {
+        while (true) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (!m_isArrowShot.get())
+                continue;
             m_arrowMover.Move();
             if (isArrowMissing()) {
                 break;
@@ -55,11 +67,6 @@ public class ArrowAnimationRunnable implements Runnable {
                         break;
                     }
                 }
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
         m_gameModel.SetArrowOffset(m_playerName, false, 0);

@@ -41,7 +41,7 @@ public class TargetsAnimationRunnable implements Runnable {
         areCirclesMoving.set(true);
     }
 
-    public void StopCircles()
+    public void PauseCircles()
     {
         areCirclesMoving.set(false);
     }

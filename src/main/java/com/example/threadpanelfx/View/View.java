@@ -117,7 +117,7 @@ public class View implements IObserver {
         // контейнер для стрелы (используется для выравнивания)
         HBox arrowBox = new HBox();
         arrowBox.setAlignment(Pos.CENTER_LEFT);
-        arrowBox.setVisible(true);
+        arrowBox.setVisible(false);
 
         // создание стрелы
         Line stretcher = new Line(); // растяжение этого отрезка перемещает стрелу
@@ -200,8 +200,6 @@ public class View implements IObserver {
             case newPlayerAdded:
                 HandleEvent((NewPlayerAdded)gameEvent);
                 break;
-            default:
-                throw new RuntimeException("Unknown game event type" + gameEvent.GetType());
         }
     }
 

@@ -21,6 +21,8 @@ public class LocalGameModel extends Observable implements IGameModel {
     private final ArrayList<PlayerInfo> m_playerInfoList = new ArrayList<>();
     private final ArrayList<Point2D> m_targetPositionAbsList = new ArrayList<>(); // две мишени
 
+    private GameState m_gameState = GameState.stopped;
+
     private PlayerInfo getPlayerInfoNoThrow(String name)
     {
         if (name == null)
@@ -166,7 +168,7 @@ public class LocalGameModel extends Observable implements IGameModel {
     }
 
     @Override
-    public boolean UpdatePlayerBeforeGameStarts(String playerName, boolean isPlayerReady) {
+    public boolean UpdatePlayerState(String playerName, boolean isPlayerReady) {
         if(m_playerNameList.contains(playerName))
             return false;
 
@@ -213,7 +215,37 @@ public class LocalGameModel extends Observable implements IGameModel {
     }
 
     @Override
-    public void ClearPlayersBeforeGameStarts() {
-        m_playerNameList.clear();
+    public void SetGameStarted() {
+        synchronized (this)
+        {
+            m_gameState = GameState.started;
+        }
+        Notify(new GameStarted());
+    }
+
+    @Override
+    public void SetGamePaused(String playerName) {
+        synchronized (this)
+        {
+            m_gameState = GameState.paused;
+        }
+        UpdatePlayerState(playerName, false);
+        Notify(new GamePaused(playerName));
+    }
+
+    @Override
+    public void SetGameStopped() {
+        synchronized (this)
+        {
+            m_gameState = GameState.stopped;
+        }
+        Notify(new GameStopped());
+    }
+
+    @Override
+    public GameState GetGameState() {
+        synchronized (this) {
+            return m_gameState;
+        }
     }
 }

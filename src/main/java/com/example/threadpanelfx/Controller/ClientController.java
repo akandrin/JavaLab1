@@ -17,17 +17,12 @@ public class ClientController implements IController {
     }
 
     @Override
-    public void OnStopGame() {
-        m_remoteInvoker.Invoke("OnStopGame", new Class[]{});
+    public void OnPauseGame(String playerName) {
+        m_remoteInvoker.Invoke("OnPauseGame", new Class[]{String.class}, playerName);
     }
 
     @Override
     public void OnShot(String playerName) {
         m_remoteInvoker.Invoke("OnShot", new Class[]{String.class}, playerName);
-    }
-
-    @Override
-    public void OnNewPlayerAdded(String playerName) {
-        m_remoteInvoker.Invoke("OnNewPlayerAdded", new Class[]{String.class}, playerName);
     }
 }

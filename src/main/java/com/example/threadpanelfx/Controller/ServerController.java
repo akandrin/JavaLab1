@@ -3,19 +3,16 @@ package com.example.threadpanelfx.Controller;
 import com.example.threadpanelfx.Controller.Animation.ArrowAnimationRunnable;
 import com.example.threadpanelfx.Controller.Animation.TargetsAnimationRunnable;
 import com.example.threadpanelfx.Model.*;
-import javafx.geometry.Point2D;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerController implements IController {
     private IGameModel m_model;
 
-    private TargetsAnimationRunnable m_targetsAnimation;
-    private List<ArrowAnimationRunnable> m_arrowAnimations = Collections.synchronizedList(new LinkedList<>());
+    private final TargetsAnimationRunnable m_targetsAnimation;
+    private final List<ArrowAnimationRunnable> m_arrowAnimations = Collections.synchronizedList(new LinkedList<>());
 
     public ServerController(IGameModel model, Circle circle1, Circle circle2) {
         this.m_model = model;
@@ -24,18 +21,48 @@ public class ServerController implements IController {
         new Thread(m_targetsAnimation).start();
     }
 
-    private AtomicBoolean m_gameStarted = new AtomicBoolean(false);
     private void StartGame()
     {
-        m_gameStarted.set(true);
+        m_model.SetGameStarted();
         m_model.AddReadyPlayers();
-        m_model.ClearPlayersBeforeGameStarts();
         m_model.ResetPlayerInfo();
         m_targetsAnimation.ResetCircles();
         m_targetsAnimation.PlayCircles();
     }
 
+    private void ContinueGame()
+    {
+        m_model.SetGameStarted();
+        m_targetsAnimation.PlayCircles();
+        synchronized (m_arrowAnimations)
+        {
+            for (var arrowAnimation : m_arrowAnimations)
+            {
+                arrowAnimation.PlayArrow();
+            }
+        }
+    }
+
     private Timer m_startGameTimer;
+
+    private void onReadyForGameImpl(String playerName, Runnable action, long delay)
+    {
+        m_model.UpdatePlayerState(playerName, true);
+        m_startGameTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                while (!m_model.PlayersReady())
+                {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                action.run();
+            }
+        }, delay);
+    }
 
     @Override
     public void OnReadyForGame(String playerName) {
@@ -46,34 +73,25 @@ public class ServerController implements IController {
             }
             m_startGameTimer = new Timer();
         }
-        if (!m_gameStarted.get()) {
-            m_model.UpdatePlayerBeforeGameStarts(playerName, true);
-            m_startGameTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    while (!m_model.PlayersReady())
-                    {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    StartGame();
-                }
-            }, 3500);
+        IGameModel.GameState gameState = m_model.GetGameState();
+        if (gameState == IGameModel.GameState.stopped) {
+            onReadyForGameImpl(playerName, this::StartGame, 3500);
+        }
+        else if (gameState == IGameModel.GameState.paused)
+        {
+            onReadyForGameImpl(playerName, this::ContinueGame, 2500);
         }
     }
 
     @Override
-    public void OnStopGame() {
-        m_gameStarted.set(false);
-        m_targetsAnimation.StopCircles();
+    public void OnPauseGame(String playerName) {
+        m_model.SetGamePaused(playerName);
+        m_targetsAnimation.PauseCircles();
         synchronized (m_arrowAnimations)
         {
             for (var arrowAnimation : m_arrowAnimations)
             {
-                arrowAnimation.StopArrow();
+                arrowAnimation.PauseArrow();
             }
         }
     }
@@ -88,11 +106,5 @@ public class ServerController implements IController {
             boolean result = m_arrowAnimations.remove(arrowAnimation);
             assert result;
         });
-    }
-
-    @Override
-    public void OnNewPlayerAdded(String playerName)
-    {
-        m_model.AddPlayer(playerName);
     }
 }

@@ -6,7 +6,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IController {
     void OnReadyForGame(String playerName);
-    void OnStopGame();
+    void OnPauseGame(String playerName);
     void OnShot(String playerName);
-    void OnNewPlayerAdded(String playerName);
 }
