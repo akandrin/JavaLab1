@@ -41,7 +41,7 @@ public interface IGameModel {
     }
     void SetGameStarted();
     void SetGamePaused(String playerName);
-    void SetGameStopped();
+    void SetGameStopped(String winnerName);
     GameState GetGameState();
 
 

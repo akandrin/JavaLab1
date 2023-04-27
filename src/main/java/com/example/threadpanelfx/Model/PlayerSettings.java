@@ -12,9 +12,4 @@ public class PlayerSettings {
     {
         return m_playerName;
     }
-
-    public static int GetMaxPlayerCount()
-    {
-        return 4;
-    }
 }

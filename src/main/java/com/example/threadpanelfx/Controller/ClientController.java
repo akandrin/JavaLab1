@@ -25,4 +25,9 @@ public class ClientController implements IController {
     public void OnShot(String playerName) {
         m_remoteInvoker.Invoke("OnShot", new Class[]{String.class}, playerName);
     }
+
+    @Override
+    public void OnStopGame(String playerName) {
+        throw new RuntimeException("Not implemented");
+    }
 }

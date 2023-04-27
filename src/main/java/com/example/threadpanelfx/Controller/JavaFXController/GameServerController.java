@@ -4,8 +4,11 @@ import com.example.threadpanelfx.Controller.CurrentControllerHolder;
 import com.example.threadpanelfx.Controller.MessageHandler.ServerMessageHandlerRunnable;
 import com.example.threadpanelfx.Controller.ServerController;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
+import com.example.threadpanelfx.Model.GameEvent.GameStarted;
 import com.example.threadpanelfx.Model.GameEvent.NewPlayerAdded;
+import com.example.threadpanelfx.Model.GameEvent.ScoresChanged;
 import com.example.threadpanelfx.Model.GameModelPool;
+import com.example.threadpanelfx.Model.GameSettings;
 import com.example.threadpanelfx.Model.IObservable;
 import com.example.threadpanelfx.NetUtility.EventSender;
 import com.example.threadpanelfx.NetUtility.MessengerPool;
@@ -60,7 +63,7 @@ public class GameServerController extends GameFrameController {
 
     private PauseTransition m_arrowCoordsUpdater = new PauseTransition(Duration.seconds(1));
 
-    private void HandleEvent(NewPlayerAdded newPlayerAdded)
+    private void HandleEvent(GameStarted gameStarted)
     {
         // Выглядит как костыль.
         // Надо выполнять UpdateArrowCoords после того, как сцена будет перерисована
@@ -73,13 +76,27 @@ public class GameServerController extends GameFrameController {
         m_arrowCoordsUpdater.play();
     }
 
+    private void HandleEvent(ScoresChanged scoresChanged)
+    {
+        String playerName = scoresChanged.GetPlayerName();
+        int scores = scoresChanged.GetScores();
+        if (scores >= GameSettings.GetScoresToWin())
+        {
+            controller.OnStopGame(playerName);
+        }
+    }
+
     @Override
     public void Update(Object event) {
         super.Update(event);
         var gameEvent = (GameEvent)event;
-        if (gameEvent.GetType() == GameEvent.Type.newPlayerAdded)
-        {
-            HandleEvent((NewPlayerAdded) gameEvent);
+        switch (gameEvent.GetType()) {
+            case gameStarted:
+                HandleEvent((GameStarted) gameEvent);
+                break;
+            case scoresChanged:
+                HandleEvent((ScoresChanged) gameEvent);
+                break;
         }
     }
 

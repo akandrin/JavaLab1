@@ -29,10 +29,10 @@ public class AsyncSingleMessenger implements IMessenger {
                 Message message = null;
                 try {
                     var reader = new ObjectInputStream(m_socket.getInputStream());
-                    System.out.println("Receiving message...");
+                    //System.out.println("Receiving message...");
                     message = (Message) reader.readObject();
                     message.addresser = m_socket;
-                    System.out.println("... received: " + message);
+                    //System.out.println("... received: " + message);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -56,9 +56,9 @@ public class AsyncSingleMessenger implements IMessenger {
                         Message message = m_messageToSend.get(0);
                         m_messageToSend.remove(0);
                         var writer = new ObjectOutputStream(m_socket.getOutputStream());
-                        System.out.println("Sending message " + message);
+                        //System.out.println("Sending message " + message);
                         writer.writeObject(message);
-                        System.out.println("... success");
+                        //System.out.println("... success");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

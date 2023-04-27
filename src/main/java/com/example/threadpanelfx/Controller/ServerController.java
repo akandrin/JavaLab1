@@ -45,29 +45,17 @@ public class ServerController implements IController {
 
     private Timer m_startGameTimer;
 
-    private void onReadyForGameImpl(String playerName, Runnable action, long delay)
-    {
+    private void onReadyForGameImpl(String playerName, Runnable action, long delay) {
         m_model.UpdatePlayerState(playerName, true);
-        if (m_model.GetPlayerStatesCopy().size() == PlayerSettings.GetMaxPlayerCount() && m_model.PlayersReady())
-        {
-            // если число игроков достигло максимума - стартуем немедленно
-            action.run();
-        }
-        else {
-            m_startGameTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    while (!m_model.PlayersReady()) {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+
+        m_startGameTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (m_model.PlayersReady()) {
                     action.run();
                 }
-            }, delay);
-        }
+            }
+        }, delay);
     }
 
     @Override
@@ -90,8 +78,18 @@ public class ServerController implements IController {
     }
 
     @Override
-    public void OnPauseGame(String playerName) {
-        m_model.SetGamePaused(playerName);
+    public void OnShot(String playerName) {
+        int shots = m_model.GetShots(playerName);
+        m_model.SetShots(playerName, shots + 1);
+        ArrowAnimationRunnable arrowAnimation = new ArrowAnimationRunnable(m_model, playerName, 25, m_targetsAnimation);
+        m_arrowAnimations.add(arrowAnimation);
+        CompletableFuture.runAsync(arrowAnimation).thenRun(()->{
+            boolean result = m_arrowAnimations.remove(arrowAnimation);
+            assert result;
+        });
+    }
+
+    private void pauseAnimation(){
         m_targetsAnimation.PauseCircles();
         synchronized (m_arrowAnimations)
         {
@@ -103,14 +101,14 @@ public class ServerController implements IController {
     }
 
     @Override
-    public void OnShot(String playerName) {
-        int shots = m_model.GetShots(playerName);
-        m_model.SetShots(playerName, shots + 1);
-        ArrowAnimationRunnable arrowAnimation = new ArrowAnimationRunnable(m_model, playerName, 25, m_targetsAnimation);
-        m_arrowAnimations.add(arrowAnimation);
-        CompletableFuture.runAsync(arrowAnimation).thenRun(()->{
-            boolean result = m_arrowAnimations.remove(arrowAnimation);
-            assert result;
-        });
+    public void OnPauseGame(String playerName) {
+        pauseAnimation();
+        m_model.SetGamePaused(playerName);
+    }
+
+    @Override
+    public void OnStopGame(String playerName) {
+        pauseAnimation();
+        m_model.SetGameStopped(playerName);
     }
 }

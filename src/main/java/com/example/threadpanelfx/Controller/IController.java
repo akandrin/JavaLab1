@@ -8,4 +8,5 @@ public interface IController {
     void OnReadyForGame(String playerName);
     void OnPauseGame(String playerName);
     void OnShot(String playerName);
+    void OnStopGame(String winnerName);
 }

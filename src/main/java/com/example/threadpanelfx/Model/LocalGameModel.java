@@ -110,11 +110,19 @@ public class LocalGameModel extends Observable implements IGameModel {
         Notify(new ScoresChanged(playerName, newScores));
     }
 
+    private void NotifyAboutAll(PlayerInfo playerInfo)
+    {
+        Notify(new ArrowChanged(playerInfo.arrowIsVisible, playerInfo.arrowOffset, playerInfo.name));
+        Notify(new ScoresChanged(playerInfo.name, playerInfo.scores));
+        Notify(new ShotsChanged(playerInfo.name, playerInfo.shots));
+    }
+
     @Override
     public void ResetPlayerInfo() {
         for (PlayerInfo playerInfo : m_playerInfoList)
         {
             playerInfo.Reset();
+            NotifyAboutAll(playerInfo);
         }
     }
 
@@ -139,8 +147,8 @@ public class LocalGameModel extends Observable implements IGameModel {
             PlayerInfo playerInfo = new PlayerInfo();
             playerInfo.name = playerName;
             m_playerInfoList.add(playerInfo);
+            Notify(new NewPlayerAdded(playerName));
         }
-        Notify(new NewPlayerAdded(playerName));
     }
 
     @Override
@@ -229,12 +237,17 @@ public class LocalGameModel extends Observable implements IGameModel {
     }
 
     @Override
-    public void SetGameStopped() {
+    public void SetGameStopped(String winnerName) {
         synchronized (this)
         {
             m_gameState = GameState.stopped;
         }
-        Notify(new GameStopped());
+        synchronized (m_playerStates) {
+            for (var playerState : m_playerStates) {
+                playerState.playerIsReady = false;
+            }
+        }
+        Notify(new GameStopped(winnerName));
     }
 
     @Override

@@ -96,6 +96,12 @@ public class GameClientController extends GameFrameController {
         m_readyButton.setDisable(false);
         m_stopButton.setDisable(true);
         m_shotButton.setDisable(true);
+
+        Alert infoAboutWinner = new Alert(Alert.AlertType.INFORMATION);
+        infoAboutWinner.setTitle("Игра окончена");
+        infoAboutWinner.setHeaderText("Игра окончена в связи с победой одного из игроков");
+        infoAboutWinner.setContentText("Игрок " + gameStopped.GetWinnerName() + " выиграл");
+        infoAboutWinner.showAndWait();
     }
 
     @Override
