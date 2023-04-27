@@ -1,7 +1,7 @@
 package com.example.threadpanelfx.Model;
 
 public class PlayerSettings {
-    private static String m_playerName = "Some name2";
+    private static String m_playerName;
 
     public static void SetPlayerName(String playerName)
     {
@@ -11,5 +11,10 @@ public class PlayerSettings {
     public static String GetPlayerName()
     {
         return m_playerName;
+    }
+
+    public static int GetMaxPlayerCount()
+    {
+        return 4;
     }
 }

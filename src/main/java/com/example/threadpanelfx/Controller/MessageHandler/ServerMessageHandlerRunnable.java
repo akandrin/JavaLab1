@@ -4,8 +4,7 @@ import com.example.threadpanelfx.Controller.IController;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
 import com.example.threadpanelfx.Model.GameModelPool;
 import com.example.threadpanelfx.Model.IGameModel;
-import com.example.threadpanelfx.Model.LocalGameModel;
-import com.example.threadpanelfx.Model.PlayerInfo;
+import com.example.threadpanelfx.Model.PlayerSettings;
 import com.example.threadpanelfx.NetUtility.IMessenger;
 import com.example.threadpanelfx.NetUtility.Invoker.RequestCall;
 import com.example.threadpanelfx.NetUtility.Message;
@@ -33,7 +32,10 @@ public class ServerMessageHandlerRunnable extends MessageHandlerRunnable{
     {
         String playerName = request.GetName();
         IGameModel model = GameModelPool.Instance().GetModel(GameModelPool.ModelType.local);
-        boolean status = model.AddPlayerBeforeGameStarts(playerName);
+        boolean status = false;
+        if (model.GetPlayerStatesCopy().size() < PlayerSettings.GetMaxPlayerCount()) {
+            status = model.AddPlayerState(playerName);
+        }
         return new CheckNameResponse(request, status);
     }
 

@@ -5,6 +5,8 @@ import com.example.threadpanelfx.Model.GameEvent.ScoresChanged;
 import com.example.threadpanelfx.Model.GameEvent.TargetChanged;
 import javafx.geometry.Point2D;
 
+import java.util.List;
+
 public interface IGameModel {
     double GetArrowOffset(String playerName);
     void SetArrowOffset(String playerName, boolean arrowIsVisible, double offset);
@@ -25,10 +27,11 @@ public interface IGameModel {
 
     void AddPlayer(String playerName);
 
-    boolean AddPlayerBeforeGameStarts(String playerName);
+    boolean AddPlayerState(String playerName);
     boolean UpdatePlayerState(String playerName, boolean isPlayerReady);
     boolean PlayersReady();
     void AddReadyPlayers();
+    List<PlayerState> GetPlayerStatesCopy();
 
     enum GameState
     {
@@ -40,5 +43,6 @@ public interface IGameModel {
     void SetGamePaused(String playerName);
     void SetGameStopped();
     GameState GetGameState();
+
 
 }

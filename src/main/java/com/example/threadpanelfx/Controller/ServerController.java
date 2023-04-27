@@ -48,20 +48,26 @@ public class ServerController implements IController {
     private void onReadyForGameImpl(String playerName, Runnable action, long delay)
     {
         m_model.UpdatePlayerState(playerName, true);
-        m_startGameTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                while (!m_model.PlayersReady())
-                {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        if (m_model.GetPlayerStatesCopy().size() == PlayerSettings.GetMaxPlayerCount() && m_model.PlayersReady())
+        {
+            // если число игроков достигло максимума - стартуем немедленно
+            action.run();
+        }
+        else {
+            m_startGameTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    while (!m_model.PlayersReady()) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    action.run();
                 }
-                action.run();
-            }
-        }, delay);
+            }, delay);
+        }
     }
 
     @Override
