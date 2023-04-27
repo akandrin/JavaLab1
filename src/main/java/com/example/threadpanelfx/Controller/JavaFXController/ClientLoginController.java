@@ -61,7 +61,7 @@ public class ClientLoginController {
         IMessenger messenger = MessengerPool.Instance().GetMessenger(MessengerPool.MessengerType.asyncSingle);
         messenger.SendMessage(new CheckNameRequest(playerName).CreateRequestMessage(null, "server"));
 
-        AtomicBoolean responseStatus = new AtomicBoolean(false);
+        AtomicInteger responseStatus = new AtomicInteger();
 
         var messageHandlerRunnable = new ClientMessageHandlerRunnable(MessengerPool.Instance().GetMessenger(MessengerPool.MessengerType.asyncSingle))
         {
@@ -72,7 +72,7 @@ public class ClientLoginController {
                 if (response.GetType() == Response.ResponseType.checkName) {
                     var checkNameResponse = (CheckNameResponse) response;
 
-                    responseStatus.set(checkNameResponse.GetStatus());
+                    responseStatus.set(checkNameResponse.GetStatus().GetValue());
                 }
                 else
                 {
@@ -82,7 +82,8 @@ public class ClientLoginController {
             }
         };
         CompletableFuture.runAsync(messageHandlerRunnable).thenRun(() -> {
-            if (responseStatus.get()) {
+            CheckNameResponse.Status status = CheckNameResponse.Status.values()[responseStatus.get()];
+            if (status == CheckNameResponse.Status.ok) {
                 // удалось добавить
                 Platform.runLater(this::switchSceneToGame);
                 // m_readyForGameButton.setDisable(false);
@@ -94,7 +95,13 @@ public class ClientLoginController {
 
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Ошибка");
-                    alert.setContentText("Игрок с таким именем уже существует");
+                    if (status == CheckNameResponse.Status.alreadyExisted) {
+                        alert.setContentText("Игрок с таким именем уже существует");
+                    }
+                    else if (status == CheckNameResponse.Status.limitExceeded)
+                    {
+                        alert.setContentText("Превышено число подключений");
+                    }
                     alert.showAndWait();
                 });
             }

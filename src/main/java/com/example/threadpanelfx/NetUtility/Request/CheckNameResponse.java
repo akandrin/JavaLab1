@@ -1,15 +1,32 @@
 package com.example.threadpanelfx.NetUtility.Request;
 
 public class CheckNameResponse extends Response {
-    private Boolean m_status;
+    public enum Status
+    {
+        alreadyExisted(0),
+        ok(1),
+        limitExceeded(2);
 
-    public CheckNameResponse(Request request, boolean isOk)
+        private final int value;
+        private Status(int value)
+        {
+            this.value = value;
+        }
+
+        public int GetValue()
+        {
+            return value;
+        }
+    }
+    private Status m_status;
+
+    public CheckNameResponse(Request request, Status status)
     {
         super(request);
-        m_status = isOk;
+        m_status = status;
     }
 
-    public boolean GetStatus()
+    public Status GetStatus()
     {
         return m_status;
     }

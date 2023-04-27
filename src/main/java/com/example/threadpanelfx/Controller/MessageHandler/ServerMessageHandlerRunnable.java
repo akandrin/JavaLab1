@@ -33,9 +33,14 @@ public class ServerMessageHandlerRunnable extends MessageHandlerRunnable{
     {
         String playerName = request.GetName();
         IGameModel model = GameModelPool.Instance().GetModel(GameModelPool.ModelType.local);
-        boolean status = false;
+        CheckNameResponse.Status status = null;
         if (model.GetPlayerStatesCopy().size() < GameSettings.GetMaxPlayerCount()) {
-            status = model.AddPlayerState(playerName);
+            boolean added = model.AddPlayerState(playerName);
+            status = added ? CheckNameResponse.Status.ok : CheckNameResponse.Status.alreadyExisted;
+        }
+        else
+        {
+            status = CheckNameResponse.Status.limitExceeded;
         }
         return new CheckNameResponse(request, status);
     }
