@@ -7,7 +7,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class LocalGameModel extends Observable implements IGameModel {
-    private final ArrayList<String> m_playerNameList = new ArrayList<>(); // используется до начала игры
+    class PlayerReady
+    {
+        public String playerName;
+        public boolean playerIsReady;
+        public PlayerReady(String playerName, boolean playerIsReady)
+        {
+            this.playerName = playerName;
+            this.playerIsReady = playerIsReady;
+        }
+    }
+    private final ArrayList<PlayerReady> m_playerNameList = new ArrayList<>(); // используется до начала игры
     private final ArrayList<PlayerInfo> m_playerInfoList = new ArrayList<>();
     private final ArrayList<Point2D> m_targetPositionAbsList = new ArrayList<>(); // две мишени
 
@@ -143,10 +153,67 @@ public class LocalGameModel extends Observable implements IGameModel {
 
     @Override
     public boolean AddPlayerBeforeGameStarts(String playerName) {
+        for (var element : m_playerNameList)
+        {
+            if (playerName.equals(element.playerName))
+            {
+                return false;
+            }
+        }
+
+        m_playerNameList.add(new PlayerReady(playerName, false));
+        return true;
+    }
+
+    @Override
+    public boolean UpdatePlayerBeforeGameStarts(String playerName, boolean isPlayerReady) {
         if(m_playerNameList.contains(playerName))
             return false;
 
-        m_playerNameList.add(playerName);
+        PlayerReady playerReady = null;
+        for (var element : m_playerNameList)
+        {
+            if (playerName.equals(element.playerName))
+            {
+                playerReady = element;
+                break;
+            }
+        }
+
+        if (playerReady == null)
+        {
+            return false;
+        }
+
+        playerReady.playerIsReady = isPlayerReady;
         return true;
+    }
+
+    @Override
+    public boolean PlayersReady() {
+        for (var element : m_playerNameList)
+        {
+            if (!element.playerIsReady)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void AddReadyPlayers() {
+        for (var element : m_playerNameList)
+        {
+            if (element.playerIsReady)
+            {
+                AddPlayer(element.playerName);
+            }
+        }
+    }
+
+    @Override
+    public void ClearPlayersBeforeGameStarts() {
+        m_playerNameList.clear();
     }
 }

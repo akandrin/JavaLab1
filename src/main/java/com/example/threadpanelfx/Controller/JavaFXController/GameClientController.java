@@ -40,25 +40,10 @@ public class GameClientController extends GameFrameController {
         controller = new ClientController();
         CurrentControllerHolder.Set(controller);
 
-        m_startButton = createButton("Начать игру", false, e -> OnStartGame());
+        m_startButton = createButton("Готов", false, e -> OnReadyForGame());
         m_stopButton = createButton("Остановить игру", true, e -> OnStopGame());
         m_shotButton = createButton("Выстрел", true, e -> OnShot());
         m_buttons.getChildren().addAll(m_startButton, m_stopButton, m_shotButton);
-    }
-
-    private boolean m_shotButtonIsDisabledPrevState;
-
-    @Override
-    protected void ActionBeforeNewPlayerAdded()
-    {
-        m_shotButtonIsDisabledPrevState = m_shotButton.isDisabled();
-        m_shotButton.setDisable(true);
-    }
-
-    @Override
-    protected void ActionAfterNewPlayerAdded()
-    {
-        m_shotButton.setDisable(m_shotButtonIsDisabledPrevState);
     }
 
     private void HandleEvent(ArrowChanged arrowChanged)
@@ -80,10 +65,9 @@ public class GameClientController extends GameFrameController {
         }
     }
 
-    public void OnStartGame()
+    public void OnReadyForGame()
     {
-        controller.OnNewPlayerAdded(PlayerSettings.GetPlayerName());
-        controller.OnStartGame();
+        controller.OnReadyForGame(PlayerSettings.GetPlayerName());
         m_startButton.setDisable(true);
         m_stopButton.setDisable(false);
         m_shotButton.setDisable(false);

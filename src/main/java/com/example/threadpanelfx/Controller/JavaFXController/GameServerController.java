@@ -3,14 +3,18 @@ package com.example.threadpanelfx.Controller.JavaFXController;
 import com.example.threadpanelfx.Controller.CurrentControllerHolder;
 import com.example.threadpanelfx.Controller.MessageHandler.ServerMessageHandlerRunnable;
 import com.example.threadpanelfx.Controller.ServerController;
+import com.example.threadpanelfx.Model.GameEvent.GameEvent;
+import com.example.threadpanelfx.Model.GameEvent.NewPlayerAdded;
 import com.example.threadpanelfx.Model.GameModelPool;
 import com.example.threadpanelfx.Model.IObservable;
 import com.example.threadpanelfx.NetUtility.EventSender;
 import com.example.threadpanelfx.NetUtility.MessengerPool;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Polygon;
+import javafx.util.Duration;
 
 public class GameServerController extends GameFrameController {
 
@@ -39,7 +43,6 @@ public class GameServerController extends GameFrameController {
     }
 
 
-    @Override
     protected void UpdateArrowCoords()
     {
         synchronized (m_arrows) {
@@ -52,6 +55,31 @@ public class GameServerController extends GameFrameController {
                 Point2D arrowHeadAbs = arrow.localToScene(arrowHead);
                 m_model.SetArrowHeadStartPositionAbs(playerName, arrowHeadAbs);
             }
+        }
+    }
+
+    private PauseTransition m_arrowCoordsUpdater = new PauseTransition(Duration.seconds(1));
+
+    private void HandleEvent(NewPlayerAdded newPlayerAdded)
+    {
+        // Выглядит как костыль.
+        // Надо выполнять UpdateArrowCoords после того, как сцена будет перерисована
+        // Но я не нашёл хорошего способа это сделать.
+        // Поэтому просто полагаемся на то, что за 1 секунду сцена будет отрисована
+        m_arrowCoordsUpdater.stop();
+        m_arrowCoordsUpdater.setOnFinished(e -> {
+            UpdateArrowCoords();
+        });
+        m_arrowCoordsUpdater.play();
+    }
+
+    @Override
+    public void Update(Object event) {
+        super.Update(event);
+        var gameEvent = (GameEvent)event;
+        if (gameEvent.GetType() == GameEvent.Type.newPlayerAdded)
+        {
+            HandleEvent((NewPlayerAdded) gameEvent);
         }
     }
 

@@ -17,43 +17,4 @@ public abstract class GameFrameController extends View {
     protected HBox m_buttons;
 
     protected IController controller;
-
-
-    protected void UpdateArrowCoords()
-    {
-    }
-
-    protected void ActionBeforeNewPlayerAdded()
-    {
-    }
-
-    protected void ActionAfterNewPlayerAdded()
-    {
-    }
-
-
-    private void HandleEvent(NewPlayerAdded newPlayerAdded)
-    {
-        // Выглядит как костыль.
-        // Надо выполнять UpdateArrowCoords после того, как сцена будет перерисована
-        // Но я не нашёл хорошего способа это сделать.
-        // Поэтому просто полагаемся на то, что за 1 секунду сцена будет отрисована
-        PauseTransition pauseTransition = new PauseTransition(Duration.seconds(1));
-        ActionBeforeNewPlayerAdded();
-        pauseTransition.setOnFinished(e -> {
-            UpdateArrowCoords();
-            ActionAfterNewPlayerAdded();
-        });
-        pauseTransition.play();
-    }
-
-    @Override
-    public void Update(Object event) {
-        super.Update(event);
-        var gameEvent = (GameEvent)event;
-        if (gameEvent.GetType() == GameEvent.Type.newPlayerAdded)
-        {
-            HandleEvent((NewPlayerAdded) gameEvent);
-        }
-    }
 }

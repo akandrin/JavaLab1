@@ -7,11 +7,9 @@ import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerController implements IController {
     private IGameModel m_model;
@@ -26,15 +24,50 @@ public class ServerController implements IController {
         new Thread(m_targetsAnimation).start();
     }
 
-    @Override
-    public void OnStartGame() {
+    private AtomicBoolean m_gameStarted = new AtomicBoolean(false);
+    private void StartGame()
+    {
+        m_gameStarted.set(true);
+        m_model.AddReadyPlayers();
+        m_model.ClearPlayersBeforeGameStarts();
         m_model.ResetPlayerInfo();
         m_targetsAnimation.ResetCircles();
         m_targetsAnimation.PlayCircles();
     }
 
+    private Timer m_startGameTimer;
+
+    @Override
+    public void OnReadyForGame(String playerName) {
+        synchronized (this) {
+            if (m_startGameTimer != null)
+            {
+                m_startGameTimer.cancel();
+            }
+            m_startGameTimer = new Timer();
+        }
+        if (!m_gameStarted.get()) {
+            m_model.UpdatePlayerBeforeGameStarts(playerName, true);
+            m_startGameTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    while (!m_model.PlayersReady())
+                    {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    StartGame();
+                }
+            }, 3500);
+        }
+    }
+
     @Override
     public void OnStopGame() {
+        m_gameStarted.set(false);
         m_targetsAnimation.StopCircles();
         synchronized (m_arrowAnimations)
         {

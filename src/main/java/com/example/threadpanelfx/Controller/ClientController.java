@@ -12,8 +12,8 @@ public class ClientController implements IController {
     }
 
     @Override
-    public void OnStartGame() {
-        m_remoteInvoker.Invoke("OnStartGame", new Class[]{});
+    public void OnReadyForGame(String playerName) {
+        m_remoteInvoker.Invoke("OnReadyForGame", new Class[]{String.class}, playerName);
     }
 
     @Override

@@ -24,5 +24,10 @@ public interface IGameModel {
     void SetShots(String playerName, int newShots);
 
     void AddPlayer(String playerName);
+
     boolean AddPlayerBeforeGameStarts(String playerName);
+    boolean UpdatePlayerBeforeGameStarts(String playerName, boolean isPlayerReady);
+    boolean PlayersReady();
+    void AddReadyPlayers();
+    void ClearPlayersBeforeGameStarts();
 }
