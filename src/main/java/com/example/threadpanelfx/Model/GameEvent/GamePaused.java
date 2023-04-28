@@ -1,7 +1,6 @@
 package com.example.threadpanelfx.Model.GameEvent;
 
 public class GamePaused extends GameEvent {
-
     private String m_playerName;
 
     public GamePaused(String playerName)

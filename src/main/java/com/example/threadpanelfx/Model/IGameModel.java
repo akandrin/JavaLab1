@@ -20,29 +20,28 @@ public interface IGameModel {
     int GetScores(String playerName);
     void SetScores(String playerName, int newScores);
 
-    void ResetPlayerInfo(); // обнуление всех данных, кроме имени игрока
+    void ResetPlayerInfo(); // обнуление всех данных, кроме имени игрока и состояния готовности
 
     int GetShots(String playerName);
     void SetShots(String playerName, int newShots);
 
-    void AddPlayer(String playerName);
+    boolean AddPlayer(String playerName, boolean notify);
 
-    boolean AddPlayerState(String playerName);
     boolean UpdatePlayerState(String playerName, boolean isPlayerReady);
     boolean PlayersReady();
-    void AddReadyPlayers();
-    List<PlayerState> GetPlayerStatesCopy();
+    void NotifyAboutPlayers();
+    List<PlayerInfo> GetPlayersInfoCopy();
 
     enum GameState
     {
         started,
         paused,
+        continued, // active?
         stopped
     }
     void SetGameStarted();
     void SetGamePaused(String playerName);
+    void SetGameContinued();
     void SetGameStopped(String winnerName);
     GameState GetGameState();
-
-
 }

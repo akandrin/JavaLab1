@@ -166,6 +166,9 @@ public class View implements IObserver {
     private void HandleEvent(NewPlayerAdded event)
     {
         String playerName = event.GetPlayerName();
+        if (m_playerInfoBoxMap.containsKey(playerName))
+            // не добавляем игрока, если он уже есть
+            return;
 
         playersVBox.getChildren().add(getPlayerBox(playerName));
         AlignChildBoxes(playersVBox);

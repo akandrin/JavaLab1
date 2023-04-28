@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocalGameModel extends Observable implements IGameModel {
-    private final ArrayList<PlayerState> m_playerStates = new ArrayList<>(); // используется до начала игры
     private final ArrayList<PlayerInfo> m_playerInfoList = new ArrayList<>();
     private final ArrayList<Point2D> m_targetPositionAbsList = new ArrayList<>(); // две мишени
 
@@ -140,58 +139,30 @@ public class LocalGameModel extends Observable implements IGameModel {
     }
 
     @Override
-    public void AddPlayer(String playerName) {
+    public boolean AddPlayer(String playerName, boolean notify) {
         PlayerInfo existedPlayerInfo = getPlayerInfoNoThrow(playerName);
         boolean needToAdd = existedPlayerInfo == null;
         if (needToAdd) {
             PlayerInfo playerInfo = new PlayerInfo();
             playerInfo.name = playerName;
             m_playerInfoList.add(playerInfo);
-            Notify(new NewPlayerAdded(playerName));
-        }
-    }
-
-    @Override
-    public boolean AddPlayerState(String playerName) {
-        for (var element : m_playerStates)
-        {
-            if (playerName.equals(element.playerName))
-            {
-                return false;
+            if (notify) {
+                Notify(new NewPlayerAdded(playerName));
             }
         }
-
-        m_playerStates.add(new PlayerState(playerName, false));
-        return true;
+        return needToAdd;
     }
 
     @Override
     public boolean UpdatePlayerState(String playerName, boolean isPlayerReady) {
-        if(m_playerStates.contains(playerName))
-            return false;
-
-        PlayerState playerState = null;
-        for (var element : m_playerStates)
-        {
-            if (playerName.equals(element.playerName))
-            {
-                playerState = element;
-                break;
-            }
-        }
-
-        if (playerState == null)
-        {
-            return false;
-        }
-
-        playerState.playerIsReady = isPlayerReady;
+        PlayerInfo playerInfo = getPlayerInfo(playerName);
+        playerInfo.playerIsReady = isPlayerReady;
         return true;
     }
 
     @Override
     public boolean PlayersReady() {
-        for (var element : m_playerStates)
+        for (var element : m_playerInfoList)
         {
             if (!element.playerIsReady)
             {
@@ -202,19 +173,17 @@ public class LocalGameModel extends Observable implements IGameModel {
     }
 
     @Override
-    public void AddReadyPlayers() {
-        for (var element : m_playerStates)
-        {
-            if (element.playerIsReady)
-            {
-                AddPlayer(element.playerName);
+    public void NotifyAboutPlayers() {
+        synchronized (m_playerInfoList) {
+            for (var playerInfo : m_playerInfoList) {
+                Notify(new NewPlayerAdded(playerInfo.name));
             }
         }
     }
 
     @Override
-    public List<PlayerState> GetPlayerStatesCopy() {
-        return (List<PlayerState>)m_playerStates.clone();
+    public List<PlayerInfo> GetPlayersInfoCopy() {
+        return (List<PlayerInfo>)m_playerInfoList.clone();
     }
 
     @Override
@@ -237,13 +206,22 @@ public class LocalGameModel extends Observable implements IGameModel {
     }
 
     @Override
+    public void SetGameContinued() {
+        synchronized (this)
+        {
+            m_gameState = GameState.continued;
+        }
+        Notify(new GameContinued());
+    }
+
+    @Override
     public void SetGameStopped(String winnerName) {
         synchronized (this)
         {
             m_gameState = GameState.stopped;
         }
-        synchronized (m_playerStates) {
-            for (var playerState : m_playerStates) {
+        synchronized (m_playerInfoList) {
+            for (var playerState : m_playerInfoList) {
                 playerState.playerIsReady = false;
             }
         }

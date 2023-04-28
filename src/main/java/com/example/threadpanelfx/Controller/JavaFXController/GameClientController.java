@@ -64,12 +64,6 @@ public class GameClientController extends GameFrameController {
 
     private void HandleEvent(GameStarted gameStarted)
     {
-        if (m_gamePausedAlert != null && m_gamePausedAlert.isShowing())
-        {
-            m_gamePausedAlert.setResult(ButtonType.OK);
-            m_gamePausedAlert.hide();
-        }
-
         m_readyButton.setDisable(true);
         m_stopButton.setDisable(false);
         m_shotButton.setDisable(false);
@@ -89,6 +83,19 @@ public class GameClientController extends GameFrameController {
             m_gamePausedAlert.setContentText("Игрок " + gamePaused.GetPlayerName() + " приостановил игру");
             m_gamePausedAlert.show();
         }
+    }
+
+    private void HandleEvent(GameContinued gamePaused)
+    {
+        if (m_gamePausedAlert != null && m_gamePausedAlert.isShowing())
+        {
+            m_gamePausedAlert.setResult(ButtonType.OK);
+            m_gamePausedAlert.hide();
+        }
+        
+        m_readyButton.setDisable(true);
+        m_stopButton.setDisable(false);
+        m_shotButton.setDisable(false);
     }
 
     private void HandleEvent(GameStopped gameStopped)
@@ -118,6 +125,9 @@ public class GameClientController extends GameFrameController {
                 break;
             case gamePaused:
                 HandleEvent((GamePaused) gameEvent);
+                break;
+            case gameContinued:
+                HandleEvent((GameContinued) gameEvent);
                 break;
             case gameStopped:
                 HandleEvent((GameStopped) gameEvent);

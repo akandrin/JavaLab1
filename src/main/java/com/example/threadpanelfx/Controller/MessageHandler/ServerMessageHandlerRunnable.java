@@ -34,8 +34,8 @@ public class ServerMessageHandlerRunnable extends MessageHandlerRunnable{
         String playerName = request.GetName();
         IGameModel model = GameModelPool.Instance().GetModel(GameModelPool.ModelType.local);
         CheckNameResponse.Status status = null;
-        if (model.GetPlayerStatesCopy().size() < GameSettings.GetMaxPlayerCount()) {
-            boolean added = model.AddPlayerState(playerName);
+        if (model.GetPlayersInfoCopy().size() < GameSettings.GetMaxPlayerCount()) {
+            boolean added = model.AddPlayer(playerName, false);
             status = added ? CheckNameResponse.Status.ok : CheckNameResponse.Status.alreadyExisted;
         }
         else

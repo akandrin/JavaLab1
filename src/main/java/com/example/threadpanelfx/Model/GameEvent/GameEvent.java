@@ -12,6 +12,7 @@ public abstract class GameEvent implements Serializable {
         newPlayerAdded,
         gameStarted,
         gamePaused,
+        gameContinued,
         gameStopped
     }
     abstract public Type GetType();

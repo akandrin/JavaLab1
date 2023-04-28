@@ -24,7 +24,7 @@ public class ServerController implements IController {
     private void StartGame()
     {
         m_model.SetGameStarted();
-        m_model.AddReadyPlayers();
+        m_model.NotifyAboutPlayers();
         m_model.ResetPlayerInfo();
         m_targetsAnimation.ResetCircles();
         m_targetsAnimation.PlayCircles();
@@ -32,7 +32,7 @@ public class ServerController implements IController {
 
     private void ContinueGame()
     {
-        m_model.SetGameStarted();
+        m_model.SetGameContinued();
         m_targetsAnimation.PlayCircles();
         synchronized (m_arrowAnimations)
         {
