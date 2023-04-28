@@ -17,7 +17,6 @@
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="600.0" spacing="40">
                            <children>
                               <Button fx:id="m_setNameButton" mnemonicParsing="false" onAction="#OnSetName" prefWidth="150.0" text="Подтвердить имя" />
-                              <Button fx:id="m_readyForGameButton" disable="true" mnemonicParsing="false" onAction="#OnReadyForGame" prefWidth="150.0" text="Готов к игре" />
                            </children>
                         </HBox>
                      </children>

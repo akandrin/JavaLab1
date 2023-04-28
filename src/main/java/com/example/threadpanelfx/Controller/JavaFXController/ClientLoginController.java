@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientLoginController {
     @FXML
-    protected Button m_setNameButton, m_readyForGameButton;
+    protected Button m_setNameButton;
 
     @FXML
     protected TextField m_nameTextField;
@@ -86,7 +86,6 @@ public class ClientLoginController {
             if (status == CheckNameResponse.Status.ok) {
                 // удалось добавить
                 Platform.runLater(this::switchSceneToGame);
-                // m_readyForGameButton.setDisable(false);
             } else {
                 // Не удалось добавить
                 PlayerSettings.SetPlayerName(null);
