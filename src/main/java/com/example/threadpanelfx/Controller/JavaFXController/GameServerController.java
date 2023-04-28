@@ -3,6 +3,8 @@ package com.example.threadpanelfx.Controller.JavaFXController;
 import com.example.threadpanelfx.Controller.CurrentControllerHolder;
 import com.example.threadpanelfx.Controller.MessageHandler.ServerMessageHandlerRunnable;
 import com.example.threadpanelfx.Controller.ServerController;
+import com.example.threadpanelfx.Model.Database.DatabaseController;
+import com.example.threadpanelfx.Model.Database.HibernateSessionFactoryUtil;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
 import com.example.threadpanelfx.Model.GameEvent.GameStarted;
 import com.example.threadpanelfx.Model.GameEvent.NewPlayerAdded;
@@ -21,9 +23,13 @@ import javafx.util.Duration;
 
 public class GameServerController extends GameFrameController {
 
+    private DatabaseController m_databaseController;
+
     public GameServerController()
     {
-        var messageHandlerRunnable = new ServerMessageHandlerRunnable(MessengerPool.Instance().GetMessenger(MessengerPool.MessengerType.asyncBroadcast));
+        HibernateSessionFactoryUtil.getSessionFactory(); // первичная инициализация
+        m_databaseController = new DatabaseController();
+        var messageHandlerRunnable = new ServerMessageHandlerRunnable(MessengerPool.Instance().GetMessenger(MessengerPool.MessengerType.asyncBroadcast), m_databaseController);
         new Thread(messageHandlerRunnable).start();
     }
 

@@ -59,7 +59,7 @@ public class ClientLoginController {
         m_setNameButton.setDisable(true);
         PlayerSettings.SetPlayerName(playerName);
         IMessenger messenger = MessengerPool.Instance().GetMessenger(MessengerPool.MessengerType.asyncSingle);
-        messenger.SendMessage(new CheckNameRequest(playerName).CreateRequestMessage(null, "server"));
+        messenger.SendMessage(new CheckNameRequest(playerName).CreateRequestMessage(null/*в этот момент имя ещё не установлено*/, "server"));
 
         AtomicInteger responseStatus = new AtomicInteger();
 

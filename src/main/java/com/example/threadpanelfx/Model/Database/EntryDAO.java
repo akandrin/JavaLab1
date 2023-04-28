@@ -6,10 +6,9 @@ import org.hibernate.Transaction;
 import java.util.List;
 
 public class EntryDAO implements IEntryDAO {
-
     @Override
-    public Entry findById(int id) {
-        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Entry.class, id);
+    public Entry findByName(String playerName) {
+        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Entry.class, playerName);
     }
 
     @Override

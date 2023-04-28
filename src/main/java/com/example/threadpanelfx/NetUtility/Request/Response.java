@@ -7,7 +7,8 @@ import java.io.Serializable;
 public abstract class Response implements Serializable {
     public enum ResponseType
     {
-        checkName
+        checkName,
+        getHighScores
     }
 
     private Request m_request;

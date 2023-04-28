@@ -1,6 +1,8 @@
 package com.example.threadpanelfx.Controller.MessageHandler;
 
 import com.example.threadpanelfx.Controller.IController;
+import com.example.threadpanelfx.Model.Database.DatabaseController;
+import com.example.threadpanelfx.Model.Database.Entry;
 import com.example.threadpanelfx.Model.GameEvent.GameEvent;
 import com.example.threadpanelfx.Model.GameModelPool;
 import com.example.threadpanelfx.Model.GameSettings;
@@ -10,17 +12,18 @@ import com.example.threadpanelfx.NetUtility.IMessenger;
 import com.example.threadpanelfx.NetUtility.Invoker.RequestCall;
 import com.example.threadpanelfx.NetUtility.Message;
 import com.example.threadpanelfx.NetUtility.MessengerPool;
-import com.example.threadpanelfx.NetUtility.Request.CheckNameRequest;
-import com.example.threadpanelfx.NetUtility.Request.CheckNameResponse;
-import com.example.threadpanelfx.NetUtility.Request.Request;
-import com.example.threadpanelfx.NetUtility.Request.Response;
+import com.example.threadpanelfx.NetUtility.Request.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 public class ServerMessageHandlerRunnable extends MessageHandlerRunnable{
 
-    public ServerMessageHandlerRunnable(IMessenger messenger) {
+    private DatabaseController m_databaseController;
+
+    public ServerMessageHandlerRunnable(IMessenger messenger, DatabaseController databaseController) {
         super(messenger);
+        this.m_databaseController = databaseController;
     }
 
     @Override
@@ -45,6 +48,12 @@ public class ServerMessageHandlerRunnable extends MessageHandlerRunnable{
         return new CheckNameResponse(request, status);
     }
 
+    private Response handleRequest(GetHighScoresRequest request)
+    {
+        List<Entry> entries = m_databaseController.findAllEntries();
+        return new GetHighScoresResponse(request, entries);
+    }
+
     private Response handleRequest(Request request)
     {
         Response response = null;
@@ -52,6 +61,9 @@ public class ServerMessageHandlerRunnable extends MessageHandlerRunnable{
         {
             case checkName:
                 response = handleRequest((CheckNameRequest) request);
+                break;
+            case getHighScores:
+                response = handleRequest((GetHighScoresRequest) request);
                 break;
             default:
                 System.err.println("Unknown request type");

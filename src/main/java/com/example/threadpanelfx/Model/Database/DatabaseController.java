@@ -11,8 +11,8 @@ public class DatabaseController {
 
         DatabaseController controller = new DatabaseController();
 
-        Entry entry = new Entry("testPlayer", 1);
-        controller.saveEntry(entry);
+        Entry entry = new Entry("testPlayer1", 2);
+        controller.saveOrUpdateEntry(entry);
         var res = controller.findAllEntries();
         System.out.println(res);
     }*/
@@ -20,8 +20,8 @@ public class DatabaseController {
     public DatabaseController() {
     }
 
-    public Entry findEntry(int id) {
-        return m_entryDao.findById(id);
+    public Entry findEntry(String playerName) {
+        return m_entryDao.findByName(playerName);
     }
 
     public void saveEntry(Entry entry) {
@@ -38,5 +38,13 @@ public class DatabaseController {
 
     public List<Entry> findAllEntries() {
         return m_entryDao.findAll();
+    }
+
+    public void saveOrUpdateEntry(Entry entry)
+    {
+        if (findEntry(entry.GetPlayerName()) != null)
+            updateEntry(entry);
+        else
+            saveEntry(entry);
     }
 }

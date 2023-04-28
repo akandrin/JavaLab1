@@ -1,14 +1,13 @@
 package com.example.threadpanelfx.Model.Database;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table (name = "high_scores_table")
-public class Entry {
+public class Entry implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     private String playerName;
     private int winCount; // число побед
 
@@ -18,11 +17,6 @@ public class Entry {
     {
         this.playerName = playerName;
         this.winCount = winCount;
-    }
-
-    public int GetId()
-    {
-        return id;
     }
 
     public String GetPlayerName()
