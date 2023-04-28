@@ -31,6 +31,12 @@ public class HighScoresTableView extends TableView {
         public void setWinCount(int value){ winCount.set(value);}
     }
 
+    private static List<Entry> sortByScores(List<Entry> entries)
+    {
+        entries.sort((entry1, entry2) -> entry2.GetWinCount() - entry1.GetWinCount());
+        return entries;
+    }
+
     private static ObservableList<HighScore> getObservableList(List<Entry> entries)
     {
         List<HighScore> highScoresList = new ArrayList<>();
@@ -43,7 +49,7 @@ public class HighScoresTableView extends TableView {
 
     public HighScoresTableView(List<Entry> entries)
     {
-        super(getObservableList(entries));
+        super(getObservableList(sortByScores(entries)));
 
         // столбец для вывода имени
         TableColumn<HighScore, String> nameColumn = new TableColumn<HighScore, String>("Имя игрока");

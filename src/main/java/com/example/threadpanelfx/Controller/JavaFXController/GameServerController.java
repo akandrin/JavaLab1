@@ -4,11 +4,9 @@ import com.example.threadpanelfx.Controller.CurrentControllerHolder;
 import com.example.threadpanelfx.Controller.MessageHandler.ServerMessageHandlerRunnable;
 import com.example.threadpanelfx.Controller.ServerController;
 import com.example.threadpanelfx.Model.Database.DatabaseController;
+import com.example.threadpanelfx.Model.Database.Entry;
 import com.example.threadpanelfx.Model.Database.HibernateSessionFactoryUtil;
-import com.example.threadpanelfx.Model.GameEvent.GameEvent;
-import com.example.threadpanelfx.Model.GameEvent.GameStarted;
-import com.example.threadpanelfx.Model.GameEvent.NewPlayerAdded;
-import com.example.threadpanelfx.Model.GameEvent.ScoresChanged;
+import com.example.threadpanelfx.Model.GameEvent.*;
 import com.example.threadpanelfx.Model.GameModelPool;
 import com.example.threadpanelfx.Model.GameSettings;
 import com.example.threadpanelfx.Model.IObservable;
@@ -92,6 +90,22 @@ public class GameServerController extends GameFrameController {
         }
     }
 
+    private void HandleEvent(GameStopped gameStopped)
+    {
+        String winnerName = gameStopped.GetWinnerName();
+        Entry entry = m_databaseController.findEntry(winnerName);
+        if (entry == null)
+        {
+            m_databaseController.saveEntry(new Entry(winnerName, 1));
+        }
+        else
+        {
+            int winCount = entry.GetWinCount();
+            entry.SetWinCount(winCount + 1);
+            m_databaseController.updateEntry(entry);
+        }
+    }
+
     @Override
     public void Update(Object event) {
         super.Update(event);
@@ -102,6 +116,9 @@ public class GameServerController extends GameFrameController {
                 break;
             case scoresChanged:
                 HandleEvent((ScoresChanged) gameEvent);
+                break;
+            case gameStopped:
+                HandleEvent((GameStopped) gameEvent);
                 break;
         }
     }
