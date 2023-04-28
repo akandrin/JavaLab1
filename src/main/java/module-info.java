@@ -4,6 +4,11 @@ module com.example.threadpanelfx {
 
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
+    requires java.persistence;
+    requires org.hibernate.orm.core;
+
+    requires java.naming;
+    requires java.sql;
 
     exports com.example.threadpanelfx.Model;
     opens com.example.threadpanelfx.Model to javafx.fxml;
@@ -19,4 +24,5 @@ module com.example.threadpanelfx {
     opens com.example.threadpanelfx.Controller.MessageHandler to javafx.fxml;
     exports com.example.threadpanelfx.Controller.JavaFXController;
     opens com.example.threadpanelfx.Controller.JavaFXController to javafx.fxml;
+    opens com.example.threadpanelfx.Model.Database to org.hibernate.orm.core;
 }
